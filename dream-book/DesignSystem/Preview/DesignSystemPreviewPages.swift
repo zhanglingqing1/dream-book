@@ -22,7 +22,6 @@ struct DesignSystemHomeView: View {
             title: "DreamBook 设计系统",
             subtitle: "先统一视觉语言，再写业务页面。所有页面都从令牌与组件生长。"
         ) {
-            ThemeModeSection(themeMode: $themeMode)
             HeroSection()
             ColorSystemSection()
             TypographySection()
@@ -32,6 +31,27 @@ struct DesignSystemHomeView: View {
         }
         .navigationTitle("设计系统")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: { themeMode = themeMode.toggled }) {
+                    HStack(spacing: AppSpacing.xs) {
+                        Image(systemName: themeMode.icon)
+                            .appIcon(size: 14, weight: .semibold)
+                        Text(themeMode.title)
+                            .textRole(.meta)
+                    }
+                    .foregroundColor(AppColor.textPrimary)
+                    .padding(.horizontal, AppSpacing.m)
+                    .padding(.vertical, AppSpacing.s)
+                    .background(
+                        Capsule()
+                            .fill(AppColor.surface)
+                    )
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("切换主题")
+            }
+        }
     }
 }
 
@@ -85,34 +105,6 @@ private struct DesignSystemPageContainer<Content: View>: View {
     }
 }
 
-// ============================================================
-// MARK: - 分区：主题模式
-// ============================================================
-
-private struct ThemeModeSection: View {
-    @Binding var themeMode: ThemeMode
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.m) {
-            SectionHeader(
-                title: "主题模式",
-                subtitle: "默认暗色，支持亮色。两者共享同一套语义令牌，避免分叉维护。"
-            )
-
-            Picker("主题模式", selection: $themeMode) {
-                ForEach(ThemeMode.allCases) { mode in
-                    Text(mode.title).tag(mode)
-                }
-            }
-            .pickerStyle(.segmented)
-            .padding(AppSpacing.s)
-            .background(AppCardBackground(cornerRadius: AppCornerRadius.md, fill: AppColor.surface))
-            .gentleLiftShadow()
-        }
-    }
-}
-
-// ============================================================
 // MARK: - 分区：封面
 // ============================================================
 

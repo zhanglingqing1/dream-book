@@ -4,6 +4,7 @@
 成员清单
 dream_bookApp.swift: App 生命周期入口，负责挂载根视图。
 ContentView.swift: 当前应用主入口页面，承载设计系统预览入口。
+ThemeStore.swift: 全局主题状态中心，统一管理亮暗模式并持久化。
 Assets.xcassets: 资源资产目录（图标、品牌色等）。
 DesignSystem/: 设计系统模块，提供视觉令牌与预览页面。
 
