@@ -5,6 +5,13 @@
 //  Created by 张凌青 on 2026/2/16.
 //
 
+/**
+ * [INPUT]: 依赖 SwiftUI App 生命周期框架，依赖 ContentView 根页面
+ * [OUTPUT]: 对外提供 dream_bookApp 应用入口并初始化 WindowGroup
+ * [POS]: dream-book/ 的应用启动文件，连接系统生命周期与界面树
+ * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
+ */
+
 import SwiftUI
 
 @main
