@@ -302,7 +302,7 @@ struct DreamActionButton: View {
                         fill: tone == .primary ? AppColor.accentInk : AppColor.surface
                     )
                 )
-                .softFloatShadow()
+                .appButtonShadow()
         }
         .buttonStyle(.plain)
     }
@@ -387,8 +387,14 @@ struct FloatingActionButton: View {
             Circle()
                 .fill(AppColor.accentInk)
                 .frame(width: 54, height: 54)
-                .shadow(color: .black.opacity(AppOpacity.medium), radius: 18, x: 0, y: 10)
-                .shadow(color: .black.opacity(AppOpacity.light), radius: 6, x: 0, y: 4)
+                .overlay(
+                    Circle()
+                        .strokeBorder(
+                            AppColor.innerStroke.opacity(AppButtonMetrics.innerStrokeOpacity),
+                            lineWidth: AppButtonMetrics.innerStrokeWidth
+                        )
+                )
+                .appButtonShadow()
 
             Image(systemName: "plus")
                 .appIcon(size: 22, weight: .bold)

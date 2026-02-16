@@ -7,7 +7,7 @@
 
 /**
  * [INPUT]: 依赖 SwiftUI 的 Color/Font/Shape 能力，依赖系统 SF Symbols 作为基础图标
- * [OUTPUT]: 对外提供胃之书 Foundation 令牌（颜色、排版、间距、圆角、阴影）与基础表面组件
+ * [OUTPUT]: 对外提供胃之书 Foundation 令牌（颜色、排版、间距、圆角、边界、阴影）与基础表面组件及阴影扩展
  * [POS]: DesignSystem/ 的基础层文件，作为后续页面复刻与组件抽象的唯一视觉真相源
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -38,6 +38,9 @@ enum BBColor {
     static let dockFill = Color.theme(light: "#EFEFED", dark: "#20201F")
     static let fabFill = Color.theme(light: "#3A3A3A", dark: "#ECEBE8")
     static let inverseText = Color.theme(light: "#F4F4F2", dark: "#1E1E1D")
+    static let innerStroke = Color.theme(light: "#FFFFFF", dark: "#E8DED2")
+    static let shadowPrimary = Color.theme(light: "#000000", dark: "#000000")
+    static let shadowSecondary = Color.theme(light: "#000000", dark: "#000000")
 
     // ---- 图片高光色 ----
     static let photoGlowMint = Color.theme(light: "#57E7D1", dark: "#4DCDBA")
@@ -146,6 +149,21 @@ enum BBStroke {
     static let prominent: CGFloat = 1.4
 }
 
+enum BBSurfaceStyle {
+    static let outerExpand: CGFloat = 1.0
+    static let borderInset: CGFloat = 1.2
+    static let borderWidth: CGFloat = 0.8
+    static let borderOpacity: Double = 0.72
+}
+
+enum BBFloatingMetrics {
+    static let innerStrokeWidth: CGFloat = 1.0
+    static let innerStrokeOpacity: Double = 0.28
+    static let shadowOpacity: Double = 0.22
+    static let shadowRadius: CGFloat = 18
+    static let shadowYOffset: CGFloat = 10
+}
+
 enum BBShadow {
     struct Layer {
         let color: Color
@@ -154,10 +172,10 @@ enum BBShadow {
         let y: CGFloat
     }
 
-    static let cardA = Layer(color: .black.opacity(0.08), radius: 14, x: 0, y: 6)
-    static let cardB = Layer(color: .black.opacity(0.12), radius: 32, x: 0, y: 18)
-    static let dockA = Layer(color: .black.opacity(0.10), radius: 14, x: 0, y: 7)
-    static let dockB = Layer(color: .black.opacity(0.08), radius: 28, x: 0, y: 16)
+    static let cardA = Layer(color: BBColor.shadowPrimary.opacity(0.08), radius: 24, x: 0, y: 8)
+    static let cardB = Layer(color: BBColor.shadowSecondary.opacity(0.06), radius: 48, x: 0, y: 24)
+    static let dockA = Layer(color: BBColor.shadowPrimary.opacity(0.06), radius: 12, x: 0, y: 4)
+    static let dockB = Layer(color: BBColor.shadowSecondary.opacity(0.04), radius: 24, x: 0, y: 12)
 }
 
 // ============================================================
@@ -213,6 +231,15 @@ extension View {
                 y: BBShadow.dockB.y
             )
     }
+
+    func bbFloatingShadow() -> some View {
+        self.shadow(
+            color: BBColor.shadowPrimary.opacity(BBFloatingMetrics.shadowOpacity),
+            radius: BBFloatingMetrics.shadowRadius,
+            x: 0,
+            y: BBFloatingMetrics.shadowYOffset
+        )
+    }
 }
 
 // ============================================================
@@ -229,23 +256,35 @@ struct BBSurfaceCard: View {
     }
 
     var body: some View {
-        RoundedRectangle(cornerRadius: radius, style: .continuous)
-            .fill(fill)
-            .overlay(
-                RoundedRectangle(cornerRadius: radius, style: .continuous)
-                    .stroke(BBColor.stroke.opacity(0.78), lineWidth: BBStroke.regular)
-            )
+        ZStack {
+            RoundedRectangle(cornerRadius: radius, style: .continuous)
+                .inset(by: -BBSurfaceStyle.outerExpand)
+                .fill(fill)
+
+            RoundedRectangle(cornerRadius: radius, style: .continuous)
+                .inset(by: BBSurfaceStyle.borderInset)
+                .strokeBorder(
+                    BBColor.stroke.opacity(BBSurfaceStyle.borderOpacity),
+                    lineWidth: BBSurfaceStyle.borderWidth
+                )
+        }
     }
 }
 
 struct BBDockPlate: View {
     var body: some View {
-        Capsule(style: .continuous)
-            .fill(BBColor.dockFill)
-            .overlay(
-                Capsule(style: .continuous)
-                    .stroke(BBColor.stroke.opacity(0.55), lineWidth: BBStroke.hairline)
-            )
+        ZStack {
+            Capsule(style: .continuous)
+                .inset(by: -BBSurfaceStyle.outerExpand)
+                .fill(BBColor.dockFill)
+
+            Capsule(style: .continuous)
+                .inset(by: BBSurfaceStyle.borderInset)
+                .strokeBorder(
+                    BBColor.stroke.opacity(BBSurfaceStyle.borderOpacity),
+                    lineWidth: BBSurfaceStyle.borderWidth
+                )
+        }
     }
 }
 
@@ -278,12 +317,18 @@ struct BBFloatingPlusButton: View {
         Circle()
             .fill(BBColor.fabFill)
             .overlay(
+                Circle()
+                    .strokeBorder(
+                        BBColor.innerStroke.opacity(BBFloatingMetrics.innerStrokeOpacity),
+                        lineWidth: BBFloatingMetrics.innerStrokeWidth
+                    )
+            )
+            .overlay(
                 Image(systemName: "plus")
                     .font(.system(size: 32, weight: .regular))
                     .foregroundColor(BBColor.inverseText)
             )
-            .shadow(color: .black.opacity(0.28), radius: 20, x: 0, y: 12)
-            .shadow(color: .black.opacity(0.12), radius: 6, x: 0, y: 4)
+            .bbFloatingShadow()
     }
 }
 

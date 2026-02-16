@@ -7,7 +7,7 @@
 
 /**
  * [INPUT]: 依赖 SwiftUI 的布局与字体能力，依赖 DS 色值常量库
- * [OUTPUT]: 对外提供 AppColor/AppTypography/AppTextRole/AppSpacing/AppCornerRadius/AppShadow 等语义令牌，以及卡片/按钮背景与文本语义扩展
+ * [OUTPUT]: 对外提供 AppColor/AppTypography/AppTextRole/AppSpacing/AppCornerRadius/AppOpacity/AppIconSize/AppCardStyle/AppButtonMetrics/AppShadow 语义令牌，以及卡片/按钮背景与文本/阴影语义扩展
  * [POS]: DesignSystem/ 的令牌主入口，被预览页和后续业务页面统一消费
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -41,6 +41,10 @@ enum AppColor {
     static let success = DS.success
     static let warning = DS.warning
     static let danger = DS.danger
+
+    static let innerStroke = DS.innerStroke
+    static let shadowPrimary = DS.shadowPrimary
+    static let shadowSecondary = DS.shadowSecondary
 }
 
 // ============================================================
@@ -220,6 +224,11 @@ enum AppButtonMetrics {
     static let minHeight: CGFloat = 48
     static let horizontal: CGFloat = 16
     static let vertical: CGFloat = 12
+    static let innerStrokeWidth: CGFloat = 1.0
+    static let innerStrokeOpacity: Double = 0.28
+    static let shadowOpacity: Double = 0.22
+    static let shadowRadius: CGFloat = 18
+    static let shadowYOffset: CGFloat = 10
 }
 
 enum AppShadow {
@@ -230,10 +239,15 @@ enum AppShadow {
         let y: CGFloat
     }
 
-    static let softFloatA = Layer(color: .black.opacity(0.28), radius: 24, x: 0, y: 10)
-    static let softFloatB = Layer(color: .black.opacity(0.18), radius: 48, x: 0, y: 22)
-    static let gentleA = Layer(color: .black.opacity(0.18), radius: 12, x: 0, y: 6)
-    static let gentleB = Layer(color: .black.opacity(0.12), radius: 24, x: 0, y: 12)
+    static let softFloat = [
+        Layer(color: AppColor.shadowPrimary.opacity(0.08), radius: 24, x: 0, y: 8),
+        Layer(color: AppColor.shadowSecondary.opacity(0.06), radius: 48, x: 0, y: 24)
+    ]
+
+    static let gentleLift = [
+        Layer(color: AppColor.shadowPrimary.opacity(0.06), radius: 12, x: 0, y: 4),
+        Layer(color: AppColor.shadowSecondary.opacity(0.04), radius: 24, x: 0, y: 12)
+    ]
 }
 
 // ============================================================
@@ -268,33 +282,42 @@ extension View {
     func softFloatShadow() -> some View {
         self
             .shadow(
-                color: AppShadow.softFloatA.color,
-                radius: AppShadow.softFloatA.radius,
-                x: AppShadow.softFloatA.x,
-                y: AppShadow.softFloatA.y
+                color: AppShadow.softFloat[0].color,
+                radius: AppShadow.softFloat[0].radius,
+                x: AppShadow.softFloat[0].x,
+                y: AppShadow.softFloat[0].y
             )
             .shadow(
-                color: AppShadow.softFloatB.color,
-                radius: AppShadow.softFloatB.radius,
-                x: AppShadow.softFloatB.x,
-                y: AppShadow.softFloatB.y
+                color: AppShadow.softFloat[1].color,
+                radius: AppShadow.softFloat[1].radius,
+                x: AppShadow.softFloat[1].x,
+                y: AppShadow.softFloat[1].y
             )
     }
 
     func gentleLiftShadow() -> some View {
         self
             .shadow(
-                color: AppShadow.gentleA.color,
-                radius: AppShadow.gentleA.radius,
-                x: AppShadow.gentleA.x,
-                y: AppShadow.gentleA.y
+                color: AppShadow.gentleLift[0].color,
+                radius: AppShadow.gentleLift[0].radius,
+                x: AppShadow.gentleLift[0].x,
+                y: AppShadow.gentleLift[0].y
             )
             .shadow(
-                color: AppShadow.gentleB.color,
-                radius: AppShadow.gentleB.radius,
-                x: AppShadow.gentleB.x,
-                y: AppShadow.gentleB.y
+                color: AppShadow.gentleLift[1].color,
+                radius: AppShadow.gentleLift[1].radius,
+                x: AppShadow.gentleLift[1].x,
+                y: AppShadow.gentleLift[1].y
             )
+    }
+
+    func appButtonShadow() -> some View {
+        self.shadow(
+            color: AppColor.shadowPrimary.opacity(AppButtonMetrics.shadowOpacity),
+            radius: AppButtonMetrics.shadowRadius,
+            x: 0,
+            y: AppButtonMetrics.shadowYOffset
+        )
     }
 }
 
@@ -337,7 +360,10 @@ struct AppButtonBackground: View {
                 .fill(fill)
 
             RoundedRectangle(cornerRadius: cornerRadius)
-                .strokeBorder(AppColor.stroke.opacity(0.42), lineWidth: 1)
+                .strokeBorder(
+                    AppColor.innerStroke.opacity(AppButtonMetrics.innerStrokeOpacity),
+                    lineWidth: AppButtonMetrics.innerStrokeWidth
+                )
         }
     }
 }

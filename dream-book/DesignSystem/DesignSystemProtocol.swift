@@ -47,6 +47,11 @@ enum DS {
     static let success = Color.theme(light: "#2F9D72", dark: "#66C79A")
     static let warning = Color.theme(light: "#D8943E", dark: "#F2BC78")
     static let danger = Color.theme(light: "#D66167", dark: "#F58B8B")
+
+    // ---- 材质辅助 ----
+    static let innerStroke = Color.theme(light: "#FFFFFF", dark: "#DCE6FF")
+    static let shadowPrimary = Color.theme(light: "#000000", dark: "#000000")
+    static let shadowSecondary = Color.theme(light: "#000000", dark: "#000000")
 }
 
 // ============================================================
