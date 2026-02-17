@@ -195,33 +195,123 @@ private struct SurfacePrimitiveSection: View {
 }
 
 private struct BottomDockShowcase: View {
-    var body: some View {
-        ZStack(alignment: .trailing) {
-            BBDockPlate()
-                .frame(height: 72)
-                .bbDockShadow()
+    @State private var selectedTab: DockTabItem = .home
 
-            HStack(spacing: BBSpacing.xl) {
-                dockIcon("house")
-                dockIcon("cup.and.saucer")
-                dockIcon("square.grid.2x2")
-                dockIcon("gift")
-            }
-            .padding(.leading, BBSpacing.xxl)
-            .padding(.trailing, 108)
-            .frame(maxWidth: .infinity, alignment: .leading)
+    var body: some View {
+        HStack(alignment: .center, spacing: BBDockMetrics.railToFabSpacing) {
+            DockTabRail(selectedTab: $selectedTab)
+                .frame(maxWidth: .infinity)
 
             BBFloatingPlusButton()
-                .frame(width: 84, height: 84)
-                .padding(.trailing, BBSpacing.xxs)
+                .frame(width: BBDockMetrics.fabWidth, height: BBDockMetrics.fabHeight)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private enum DockTabItem: String, CaseIterable, Identifiable {
+    case home
+    case food
+    case modules
+    case gifts
+
+    var id: String { rawValue }
+
+    var symbol: String {
+        switch self {
+        case .home:
+            return "house"
+        case .food:
+            return "cup.and.saucer"
+        case .modules:
+            return "square.grid.2x2"
+        case .gifts:
+            return "gift"
         }
     }
 
-    private func dockIcon(_ symbol: String) -> some View {
-        Image(systemName: symbol)
-            .font(.system(size: 26, weight: .regular))
-            .foregroundColor(BBColor.textTertiary)
-            .frame(width: 44, height: 44)
+    var selectedSymbol: String {
+        switch self {
+        case .home:
+            return "house.fill"
+        case .food:
+            return "cup.and.saucer.fill"
+        case .modules:
+            return "square.grid.2x2.fill"
+        case .gifts:
+            return "gift.fill"
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .home:
+            return "首页"
+        case .food:
+            return "饮食"
+        case .modules:
+            return "模块"
+        case .gifts:
+            return "福利"
+        }
+    }
+}
+
+private struct DockTabRail: View {
+    @Binding var selectedTab: DockTabItem
+
+    var body: some View {
+        ZStack {
+            BBDockPlate()
+                .bbDockShadow()
+
+            HStack(spacing: BBDockMetrics.tabItemSpacing) {
+                ForEach(DockTabItem.allCases) { tab in
+                    DockTabButton(
+                        tab: tab,
+                        isSelected: selectedTab == tab,
+                        onTap: { selectedTab = tab }
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+            }
+            .padding(.horizontal, BBDockMetrics.railHorizontalPadding)
+            .padding(.vertical, BBDockMetrics.railVerticalPadding)
+        }
+        .frame(height: BBDockMetrics.railHeight)
+    }
+}
+
+private struct DockTabButton: View {
+    let tab: DockTabItem
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            ZStack {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: BBDockMetrics.tabSelectionCornerRadius, style: .continuous)
+                        .fill(BBColor.cardStrong)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: BBDockMetrics.tabSelectionCornerRadius, style: .continuous)
+                                .stroke(BBColor.stroke.opacity(BBSurfaceStyle.borderOpacity), lineWidth: BBStroke.hairline)
+                        )
+                        .padding(.horizontal, BBDockMetrics.tabSelectionHorizontalInset)
+                        .padding(.vertical, BBDockMetrics.tabSelectionVerticalInset)
+                        .bbCardShadow()
+                }
+
+                Image(systemName: isSelected ? tab.selectedSymbol : tab.symbol)
+                    .font(.system(size: BBDockMetrics.tabIconSize, weight: isSelected ? .semibold : .regular))
+                    .foregroundColor(isSelected ? BBColor.textPrimary : BBColor.textTertiary)
+            }
+            .frame(maxWidth: .infinity, minHeight: BBDockMetrics.tabButtonHeight)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(tab.title)
+        .accessibilityValue(isSelected ? "当前页" : "未选中")
     }
 }
 

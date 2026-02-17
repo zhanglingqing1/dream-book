@@ -164,6 +164,27 @@ enum BBFloatingMetrics {
     static let shadowYOffset: CGFloat = 10
 }
 
+enum BBDockMetrics {
+    // ---- iOS 导航比例：轨道更长，FAB 更收敛 ----
+    static let railHeight: CGFloat = 70
+    static let railHorizontalPadding: CGFloat = BBSpacing.xs
+    static let railVerticalPadding: CGFloat = 5
+    static let railToFabSpacing: CGFloat = BBSpacing.xs
+    static let dockCornerRadius: CGFloat = 35
+
+    static let tabItemSpacing: CGFloat = 0
+    static let tabButtonHeight: CGFloat = 60
+    static let tabIconSize: CGFloat = 19
+    static let tabSelectionHorizontalInset: CGFloat = 0
+    static let tabSelectionVerticalInset: CGFloat = 1
+    static let tabSelectionCornerRadius: CGFloat = dockCornerRadius
+
+    static let fabWidth: CGFloat = 84
+    static let fabHeight: CGFloat = 70
+    static let fabCornerRadius: CGFloat = dockCornerRadius
+    static let fabIconSize: CGFloat = 22
+}
+
 enum BBShadow {
     struct Layer {
         let color: Color
@@ -274,11 +295,11 @@ struct BBSurfaceCard: View {
 struct BBDockPlate: View {
     var body: some View {
         ZStack {
-            Capsule(style: .continuous)
+            RoundedRectangle(cornerRadius: BBDockMetrics.dockCornerRadius, style: .continuous)
                 .inset(by: -BBSurfaceStyle.outerExpand)
                 .fill(BBColor.dockFill)
 
-            Capsule(style: .continuous)
+            RoundedRectangle(cornerRadius: BBDockMetrics.dockCornerRadius, style: .continuous)
                 .inset(by: BBSurfaceStyle.borderInset)
                 .strokeBorder(
                     BBColor.stroke.opacity(BBSurfaceStyle.borderOpacity),
@@ -314,10 +335,10 @@ struct BBPremiumPill: View {
 
 struct BBFloatingPlusButton: View {
     var body: some View {
-        Circle()
+        RoundedRectangle(cornerRadius: BBDockMetrics.fabCornerRadius, style: .continuous)
             .fill(BBColor.fabFill)
             .overlay(
-                Circle()
+                RoundedRectangle(cornerRadius: BBDockMetrics.fabCornerRadius, style: .continuous)
                     .strokeBorder(
                         BBColor.innerStroke.opacity(BBFloatingMetrics.innerStrokeOpacity),
                         lineWidth: BBFloatingMetrics.innerStrokeWidth
@@ -325,7 +346,7 @@ struct BBFloatingPlusButton: View {
             )
             .overlay(
                 Image(systemName: "plus")
-                    .font(.system(size: 32, weight: .regular))
+                    .font(.system(size: BBDockMetrics.fabIconSize, weight: .regular))
                     .foregroundColor(BBColor.inverseText)
             )
             .bbFloatingShadow()
