@@ -6,9 +6,9 @@
 //
 
 /**
- * [INPUT]: 依赖 SwiftUI 的 Color/Font/Shape 能力，依赖系统 SF Symbols 作为基础图标
- * [OUTPUT]: 对外提供梦之书 Foundation 令牌（颜色、排版、间距、圆角、边界、阴影）与基础表面组件及阴影扩展
- * [POS]: DesignSystem/ 的基础层文件，作为后续页面复刻与组件抽象的唯一视觉真相源
+ * [INPUT]: 依赖 SwiftUI 的 Color/Font/Shape/动画能力，依赖系统 SF Symbols 作为基础图标
+ * [OUTPUT]: 对外提供梦之书 Foundation 令牌（颜色、排版、间距、圆角、边界、阴影）与基础表面组件及处理态容器组件
+ * [POS]: DesignSystem/ 的基础层文件，作为后续页面复刻与解梦/生成态组件抽象的唯一视觉真相源
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
@@ -162,6 +162,25 @@ enum DreamFloatingMetrics {
     static let shadowOpacity: Double = 0.22
     static let shadowRadius: CGFloat = 18
     static let shadowYOffset: CGFloat = 10
+}
+
+enum DreamProcessingVisualMetrics {
+    static let borderLineWidth: CGFloat = 2.0
+    static let borderFlowDuration: Double = 2.8
+    static let glowSoftRadius: CGFloat = 12
+    static let glowHardRadius: CGFloat = 22
+    static let glowSoftOpacity: Double = 0.40
+    static let glowHardOpacity: Double = 0.24
+
+    static let shimmerSweepDuration: Double = 1.35
+    static let shimmerAngle: Double = -18
+    static let shimmerBandRatio: CGFloat = 0.32
+    static let shimmerBandMinimum: CGFloat = 92
+    static let shimmerSurfaceOpacity: Double = 0.20
+    static let shimmerBandOpacity: Double = 0.92
+
+    static let reducedPulseDuration: Double = 2.0
+    static let stateTransitionDuration: Double = 0.22
 }
 
 enum DreamDockMetrics {
@@ -355,22 +374,242 @@ struct DreamFloatingPlusButton: View {
 
 struct DreamNeonPhotoFrame<Content: View>: View {
     let radius: CGFloat
+    let isProcessing: Bool
+    let showPlaceholder: Bool
     private let content: Content
+    private let placeholder: AnyView
 
-    init(radius: CGFloat = DreamCornerRadius.md, @ViewBuilder content: () -> Content) {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    @State private var borderPhase: Double = 0
+    @State private var shimmerOffset: CGFloat = -1.1
+    @State private var pulseOpacity: Double = 0.62
+
+    init(
+        radius: CGFloat = DreamCornerRadius.md,
+        isProcessing: Bool = false,
+        showPlaceholder: Bool = false,
+        @ViewBuilder content: () -> Content
+    ) {
         self.radius = radius
+        self.isProcessing = isProcessing
+        self.showPlaceholder = showPlaceholder
         self.content = content()
+        self.placeholder = AnyView(DreamNeonDefaultPlaceholder())
+    }
+
+    init<Placeholder: View>(
+        radius: CGFloat = DreamCornerRadius.md,
+        isProcessing: Bool = false,
+        showPlaceholder: Bool = false,
+        @ViewBuilder placeholder: () -> Placeholder,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.radius = radius
+        self.isProcessing = isProcessing
+        self.showPlaceholder = showPlaceholder
+        self.content = content()
+        self.placeholder = AnyView(placeholder())
     }
 
     var body: some View {
-        content
-            .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+        let frameShape = RoundedRectangle(cornerRadius: radius, style: .continuous)
+
+        ZStack {
+            if showPlaceholder {
+                placeholder
+            } else {
+                content
+            }
+
+            if isProcessing {
+                processingShimmer
+                    .transition(.opacity)
+            }
+        }
+        .clipShape(frameShape)
+        .overlay {
+            // ---- 常态边界：处理完成后只保留中性描边 ----
+            frameShape
+                .stroke(DreamColor.stroke.opacity(isProcessing ? 0.34 : 0.62), lineWidth: DreamStroke.regular)
+        }
+        .overlay {
+            if isProcessing {
+                processingBorder(frameShape: frameShape)
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: DreamProcessingVisualMetrics.stateTransitionDuration), value: isProcessing)
+        .animation(.easeInOut(duration: DreamProcessingVisualMetrics.stateTransitionDuration), value: showPlaceholder)
+        .onAppear {
+            restartProcessingAnimation()
+        }
+        .onChange(of: isProcessing) { _, _ in
+            restartProcessingAnimation()
+        }
+        .onChange(of: reduceMotion) { _, _ in
+            restartProcessingAnimation()
+        }
+    }
+
+    @ViewBuilder
+    private func processingBorder(frameShape: RoundedRectangle) -> some View {
+        frameShape
             .overlay(
-                RoundedRectangle(cornerRadius: radius, style: .continuous)
-                    .stroke(DreamGradient.photoRing, lineWidth: 2)
+                frameShape
+                    .stroke(
+                        AngularGradient(
+                            colors: [
+                                DreamColor.photoGlowMint,
+                                DreamColor.photoGlowCyan,
+                                DreamColor.photoGlowViolet,
+                                DreamColor.photoGlowAmber,
+                                DreamColor.photoGlowMint
+                            ],
+                            center: .center,
+                            angle: .degrees(borderPhase)
+                        ),
+                        lineWidth: DreamProcessingVisualMetrics.borderLineWidth
+                    )
             )
-            .shadow(color: DreamColor.photoGlowMint.opacity(0.45), radius: 14, x: 0, y: 8)
-            .shadow(color: DreamColor.photoGlowViolet.opacity(0.30), radius: 24, x: 0, y: 16)
+            .overlay(
+                frameShape
+                    .stroke(
+                        AngularGradient(
+                            colors: [
+                                DreamColor.photoGlowMint.opacity(0.70),
+                                DreamColor.photoGlowCyan.opacity(0.65),
+                                DreamColor.photoGlowViolet.opacity(0.68),
+                                DreamColor.photoGlowAmber.opacity(0.65),
+                                DreamColor.photoGlowMint.opacity(0.70)
+                            ],
+                            center: .center,
+                            angle: .degrees(borderPhase)
+                        ),
+                        lineWidth: DreamProcessingVisualMetrics.borderLineWidth + 0.8
+                    )
+                    .blur(radius: 2.8)
+                    .opacity(reduceMotion ? pulseOpacity : 0.64)
+            )
+            .shadow(
+                color: DreamColor.photoGlowMint.opacity(reduceMotion ? pulseOpacity : DreamProcessingVisualMetrics.glowSoftOpacity),
+                radius: DreamProcessingVisualMetrics.glowSoftRadius,
+                x: 0,
+                y: 6
+            )
+            .shadow(
+                color: DreamColor.photoGlowViolet.opacity(reduceMotion ? max(0.12, pulseOpacity - 0.20) : DreamProcessingVisualMetrics.glowHardOpacity),
+                radius: DreamProcessingVisualMetrics.glowHardRadius,
+                x: 0,
+                y: 14
+            )
+    }
+
+    private var processingShimmer: some View {
+        GeometryReader { proxy in
+            let width = proxy.size.width
+            let height = proxy.size.height
+            let shimmerBand = max(width * DreamProcessingVisualMetrics.shimmerBandRatio, DreamProcessingVisualMetrics.shimmerBandMinimum)
+
+            ZStack {
+                // ---- 底层柔光：持续提供“正在处理”的材质反馈 ----
+                LinearGradient(
+                    colors: [
+                        .clear,
+                        DreamColor.photoGlowCyan.opacity(0.14),
+                        DreamColor.photoGlowViolet.opacity(0.10),
+                        .clear
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .opacity(reduceMotion ? pulseOpacity * 0.55 : DreamProcessingVisualMetrics.shimmerSurfaceOpacity)
+
+                // ---- 主扫光带：斜向移动，模拟反射光掠过 ----
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: 0.00),
+                        .init(color: DreamColor.photoGlowMint.opacity(0.30), location: 0.28),
+                        .init(color: DreamColor.inverseText.opacity(0.55), location: 0.50),
+                        .init(color: DreamColor.photoGlowViolet.opacity(0.28), location: 0.72),
+                        .init(color: .clear, location: 1.00)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(width: shimmerBand, height: max(height * 1.9, 1))
+                .rotationEffect(.degrees(DreamProcessingVisualMetrics.shimmerAngle))
+                .offset(x: reduceMotion ? 0 : shimmerOffset * width)
+                .opacity(reduceMotion ? pulseOpacity : DreamProcessingVisualMetrics.shimmerBandOpacity)
+            }
+            .blendMode(.screen)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .allowsHitTesting(false)
+    }
+
+    private func restartProcessingAnimation() {
+        borderPhase = 0
+        shimmerOffset = -1.1
+        pulseOpacity = 0.62
+
+        guard isProcessing else { return }
+
+        if reduceMotion {
+            withAnimation(
+                .easeInOut(duration: DreamProcessingVisualMetrics.reducedPulseDuration)
+                    .repeatForever(autoreverses: true)
+            ) {
+                pulseOpacity = 0.88
+            }
+            return
+        }
+
+        withAnimation(
+            .linear(duration: DreamProcessingVisualMetrics.borderFlowDuration)
+                .repeatForever(autoreverses: false)
+        ) {
+            borderPhase = 360
+        }
+
+        withAnimation(
+            .linear(duration: DreamProcessingVisualMetrics.shimmerSweepDuration)
+                .repeatForever(autoreverses: false)
+        ) {
+            shimmerOffset = 1.1
+        }
+    }
+}
+
+private struct DreamNeonDefaultPlaceholder: View {
+    var body: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    DreamColor.surface,
+                    DreamColor.cardStrong
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            VStack(alignment: .leading, spacing: DreamSpacing.s) {
+                RoundedRectangle(cornerRadius: DreamCornerRadius.sm, style: .continuous)
+                    .fill(DreamColor.textTertiary.opacity(0.20))
+                    .frame(height: 18)
+
+                RoundedRectangle(cornerRadius: DreamCornerRadius.sm, style: .continuous)
+                    .fill(DreamColor.textTertiary.opacity(0.14))
+                    .frame(height: 12)
+
+                Spacer(minLength: 0)
+
+                RoundedRectangle(cornerRadius: DreamCornerRadius.sm, style: .continuous)
+                    .fill(DreamColor.textTertiary.opacity(0.18))
+                    .frame(width: 120, height: 12)
+            }
+            .padding(DreamSpacing.l)
+        }
     }
 }
 
