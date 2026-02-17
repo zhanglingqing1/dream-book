@@ -1,5 +1,5 @@
 //
-//  BellyBookFoundation.swift
+//  DreamBookFoundation.swift
 //  dream-book
 //
 //  Created by Codex on 2026/2/16.
@@ -7,7 +7,7 @@
 
 /**
  * [INPUT]: 依赖 SwiftUI 的 Color/Font/Shape 能力，依赖系统 SF Symbols 作为基础图标
- * [OUTPUT]: 对外提供胃之书 Foundation 令牌（颜色、排版、间距、圆角、边界、阴影）与基础表面组件及阴影扩展
+ * [OUTPUT]: 对外提供梦之书 Foundation 令牌（颜色、排版、间距、圆角、边界、阴影）与基础表面组件及阴影扩展
  * [POS]: DesignSystem/ 的基础层文件，作为后续页面复刻与组件抽象的唯一视觉真相源
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -16,10 +16,10 @@ import SwiftUI
 import UIKit
 
 // ============================================================
-// MARK: - 胃之书色彩令牌
+// MARK: - 梦之书色彩令牌
 // ============================================================
 
-enum BBColor {
+enum DreamColor {
     // ---- 中性背景 ----
     static let canvas = Color.theme(light: "#ECECEC", dark: "#121211")
     static let surface = Color.theme(light: "#F4F4F2", dark: "#1B1B1A")
@@ -49,15 +49,15 @@ enum BBColor {
     static let photoGlowAmber = Color.theme(light: "#F7C56A", dark: "#DFAE5D")
 }
 
-enum BBGradient {
+enum DreamGradient {
     static let photoRing = AngularGradient(
         gradient: Gradient(
             colors: [
-                BBColor.photoGlowMint,
-                BBColor.photoGlowCyan,
-                BBColor.photoGlowViolet,
-                BBColor.photoGlowAmber,
-                BBColor.photoGlowMint
+                DreamColor.photoGlowMint,
+                DreamColor.photoGlowCyan,
+                DreamColor.photoGlowViolet,
+                DreamColor.photoGlowAmber,
+                DreamColor.photoGlowMint
             ]
         ),
         center: .center
@@ -65,10 +65,10 @@ enum BBGradient {
 }
 
 // ============================================================
-// MARK: - 胃之书排版令牌
+// MARK: - 梦之书排版令牌
 // ============================================================
 
-enum BBTypography {
+enum DreamTypography {
     static let pageTitle = Font.system(size: 22, weight: .semibold, design: .serif)
     static let sectionTitle = Font.system(size: 54, weight: .semibold, design: .serif)
     static let cardTitle = Font.system(size: 44, weight: .semibold, design: .serif)
@@ -79,14 +79,14 @@ enum BBTypography {
     static let metricUnit = Font.system(size: 20, weight: .semibold, design: .default)
 }
 
-struct BBTextStyle {
+struct DreamTextStyle {
     let font: Font
     let tracking: CGFloat
     let lineSpacing: CGFloat
     let monospacedDigits: Bool
 }
 
-enum BBTextRole: String, CaseIterable {
+enum DreamTextRole: String, CaseIterable {
     case navTitle
     case sectionTitle
     case cardTitle
@@ -96,35 +96,35 @@ enum BBTextRole: String, CaseIterable {
     case metric
     case metricUnit
 
-    var style: BBTextStyle {
+    var style: DreamTextStyle {
         switch self {
         case .navTitle:
-            return BBTextStyle(font: BBTypography.pageTitle, tracking: 0.2, lineSpacing: 0, monospacedDigits: false)
+            return DreamTextStyle(font: DreamTypography.pageTitle, tracking: 0.2, lineSpacing: 0, monospacedDigits: false)
         case .sectionTitle:
-            return BBTextStyle(font: BBTypography.sectionTitle, tracking: 0, lineSpacing: 0, monospacedDigits: false)
+            return DreamTextStyle(font: DreamTypography.sectionTitle, tracking: 0, lineSpacing: 0, monospacedDigits: false)
         case .cardTitle:
-            return BBTextStyle(font: BBTypography.cardTitle, tracking: 0, lineSpacing: 1, monospacedDigits: false)
+            return DreamTextStyle(font: DreamTypography.cardTitle, tracking: 0, lineSpacing: 1, monospacedDigits: false)
         case .body:
-            return BBTextStyle(font: BBTypography.body, tracking: 0, lineSpacing: 2, monospacedDigits: false)
+            return DreamTextStyle(font: DreamTypography.body, tracking: 0, lineSpacing: 2, monospacedDigits: false)
         case .bodyStrong:
-            return BBTextStyle(font: BBTypography.bodyStrong, tracking: 0.1, lineSpacing: 2, monospacedDigits: false)
+            return DreamTextStyle(font: DreamTypography.bodyStrong, tracking: 0.1, lineSpacing: 2, monospacedDigits: false)
         case .caption:
-            return BBTextStyle(font: BBTypography.caption, tracking: 0.3, lineSpacing: 1, monospacedDigits: false)
+            return DreamTextStyle(font: DreamTypography.caption, tracking: 0.3, lineSpacing: 1, monospacedDigits: false)
         case .metric:
-            return BBTextStyle(font: BBTypography.metric, tracking: -0.5, lineSpacing: 0, monospacedDigits: true)
+            return DreamTextStyle(font: DreamTypography.metric, tracking: -0.5, lineSpacing: 0, monospacedDigits: true)
         case .metricUnit:
-            return BBTextStyle(font: BBTypography.metricUnit, tracking: 0, lineSpacing: 0, monospacedDigits: false)
+            return DreamTextStyle(font: DreamTypography.metricUnit, tracking: 0, lineSpacing: 0, monospacedDigits: false)
         }
     }
 
-    static let previewRoles: [BBTextRole] = [.navTitle, .cardTitle, .body, .caption, .metric]
+    static let previewRoles: [DreamTextRole] = [.navTitle, .cardTitle, .body, .caption, .metric]
 }
 
 // ============================================================
 // MARK: - 几何令牌
 // ============================================================
 
-enum BBSpacing {
+enum DreamSpacing {
     static let xxs: CGFloat = 4
     static let xs: CGFloat = 8
     static let s: CGFloat = 12
@@ -135,7 +135,7 @@ enum BBSpacing {
     static let xxxl: CGFloat = 40
 }
 
-enum BBCornerRadius {
+enum DreamCornerRadius {
     static let sm: CGFloat = 16
     static let md: CGFloat = 22
     static let lg: CGFloat = 30
@@ -143,20 +143,20 @@ enum BBCornerRadius {
     static let capsule: CGFloat = 999
 }
 
-enum BBStroke {
+enum DreamStroke {
     static let hairline: CGFloat = 0.8
     static let regular: CGFloat = 1.0
     static let prominent: CGFloat = 1.4
 }
 
-enum BBSurfaceStyle {
+enum DreamSurfaceStyle {
     static let outerExpand: CGFloat = 1.0
     static let borderInset: CGFloat = 1.2
     static let borderWidth: CGFloat = 0.8
     static let borderOpacity: Double = 0.72
 }
 
-enum BBFloatingMetrics {
+enum DreamFloatingMetrics {
     static let innerStrokeWidth: CGFloat = 1.0
     static let innerStrokeOpacity: Double = 0.28
     static let shadowOpacity: Double = 0.22
@@ -164,12 +164,12 @@ enum BBFloatingMetrics {
     static let shadowYOffset: CGFloat = 10
 }
 
-enum BBDockMetrics {
+enum DreamDockMetrics {
     // ---- iOS 导航比例：轨道更长，FAB 更收敛 ----
     static let railHeight: CGFloat = 70
-    static let railHorizontalPadding: CGFloat = BBSpacing.xs
+    static let railHorizontalPadding: CGFloat = DreamSpacing.xs
     static let railVerticalPadding: CGFloat = 5
-    static let railToFabSpacing: CGFloat = BBSpacing.xs
+    static let railToFabSpacing: CGFloat = DreamSpacing.xs
     static let dockCornerRadius: CGFloat = 35
 
     static let tabItemSpacing: CGFloat = 0
@@ -185,7 +185,7 @@ enum BBDockMetrics {
     static let fabIconSize: CGFloat = 22
 }
 
-enum BBShadow {
+enum DreamShadow {
     struct Layer {
         let color: Color
         let radius: CGFloat
@@ -193,10 +193,10 @@ enum BBShadow {
         let y: CGFloat
     }
 
-    static let cardA = Layer(color: BBColor.shadowPrimary.opacity(0.08), radius: 24, x: 0, y: 8)
-    static let cardB = Layer(color: BBColor.shadowSecondary.opacity(0.06), radius: 48, x: 0, y: 24)
-    static let dockA = Layer(color: BBColor.shadowPrimary.opacity(0.06), radius: 12, x: 0, y: 4)
-    static let dockB = Layer(color: BBColor.shadowSecondary.opacity(0.04), radius: 24, x: 0, y: 12)
+    static let cardA = Layer(color: DreamColor.shadowPrimary.opacity(0.08), radius: 24, x: 0, y: 8)
+    static let cardB = Layer(color: DreamColor.shadowSecondary.opacity(0.06), radius: 48, x: 0, y: 24)
+    static let dockA = Layer(color: DreamColor.shadowPrimary.opacity(0.06), radius: 12, x: 0, y: 4)
+    static let dockB = Layer(color: DreamColor.shadowSecondary.opacity(0.04), radius: 24, x: 0, y: 12)
 }
 
 // ============================================================
@@ -205,7 +205,7 @@ enum BBShadow {
 
 extension Text {
     @ViewBuilder
-    func bbRole(_ role: BBTextRole) -> some View {
+    func dreamRole(_ role: DreamTextRole) -> some View {
         let style = role.style
         let base = self
             .font(style.font)
@@ -221,44 +221,44 @@ extension Text {
 }
 
 extension View {
-    func bbCardShadow() -> some View {
+    func dreamCardShadow() -> some View {
         self
             .shadow(
-                color: BBShadow.cardA.color,
-                radius: BBShadow.cardA.radius,
-                x: BBShadow.cardA.x,
-                y: BBShadow.cardA.y
+                color: DreamShadow.cardA.color,
+                radius: DreamShadow.cardA.radius,
+                x: DreamShadow.cardA.x,
+                y: DreamShadow.cardA.y
             )
             .shadow(
-                color: BBShadow.cardB.color,
-                radius: BBShadow.cardB.radius,
-                x: BBShadow.cardB.x,
-                y: BBShadow.cardB.y
+                color: DreamShadow.cardB.color,
+                radius: DreamShadow.cardB.radius,
+                x: DreamShadow.cardB.x,
+                y: DreamShadow.cardB.y
             )
     }
 
-    func bbDockShadow() -> some View {
+    func dreamDockShadow() -> some View {
         self
             .shadow(
-                color: BBShadow.dockA.color,
-                radius: BBShadow.dockA.radius,
-                x: BBShadow.dockA.x,
-                y: BBShadow.dockA.y
+                color: DreamShadow.dockA.color,
+                radius: DreamShadow.dockA.radius,
+                x: DreamShadow.dockA.x,
+                y: DreamShadow.dockA.y
             )
             .shadow(
-                color: BBShadow.dockB.color,
-                radius: BBShadow.dockB.radius,
-                x: BBShadow.dockB.x,
-                y: BBShadow.dockB.y
+                color: DreamShadow.dockB.color,
+                radius: DreamShadow.dockB.radius,
+                x: DreamShadow.dockB.x,
+                y: DreamShadow.dockB.y
             )
     }
 
-    func bbFloatingShadow() -> some View {
+    func dreamFloatingShadow() -> some View {
         self.shadow(
-            color: BBColor.shadowPrimary.opacity(BBFloatingMetrics.shadowOpacity),
-            radius: BBFloatingMetrics.shadowRadius,
+            color: DreamColor.shadowPrimary.opacity(DreamFloatingMetrics.shadowOpacity),
+            radius: DreamFloatingMetrics.shadowRadius,
             x: 0,
-            y: BBFloatingMetrics.shadowYOffset
+            y: DreamFloatingMetrics.shadowYOffset
         )
     }
 }
@@ -267,11 +267,11 @@ extension View {
 // MARK: - 基础表面组件
 // ============================================================
 
-struct BBSurfaceCard: View {
+struct DreamSurfaceCard: View {
     let radius: CGFloat
     let fill: Color
 
-    init(radius: CGFloat = BBCornerRadius.lg, fill: Color = BBColor.card) {
+    init(radius: CGFloat = DreamCornerRadius.lg, fill: Color = DreamColor.card) {
         self.radius = radius
         self.fill = fill
     }
@@ -279,37 +279,37 @@ struct BBSurfaceCard: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: radius, style: .continuous)
-                .inset(by: -BBSurfaceStyle.outerExpand)
+                .inset(by: -DreamSurfaceStyle.outerExpand)
                 .fill(fill)
 
             RoundedRectangle(cornerRadius: radius, style: .continuous)
-                .inset(by: BBSurfaceStyle.borderInset)
+                .inset(by: DreamSurfaceStyle.borderInset)
                 .strokeBorder(
-                    BBColor.stroke.opacity(BBSurfaceStyle.borderOpacity),
-                    lineWidth: BBSurfaceStyle.borderWidth
+                    DreamColor.stroke.opacity(DreamSurfaceStyle.borderOpacity),
+                    lineWidth: DreamSurfaceStyle.borderWidth
                 )
         }
     }
 }
 
-struct BBDockPlate: View {
+struct DreamDockPlate: View {
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: BBDockMetrics.dockCornerRadius, style: .continuous)
-                .inset(by: -BBSurfaceStyle.outerExpand)
-                .fill(BBColor.dockFill)
+            RoundedRectangle(cornerRadius: DreamDockMetrics.dockCornerRadius, style: .continuous)
+                .inset(by: -DreamSurfaceStyle.outerExpand)
+                .fill(DreamColor.dockFill)
 
-            RoundedRectangle(cornerRadius: BBDockMetrics.dockCornerRadius, style: .continuous)
-                .inset(by: BBSurfaceStyle.borderInset)
+            RoundedRectangle(cornerRadius: DreamDockMetrics.dockCornerRadius, style: .continuous)
+                .inset(by: DreamSurfaceStyle.borderInset)
                 .strokeBorder(
-                    BBColor.stroke.opacity(BBSurfaceStyle.borderOpacity),
-                    lineWidth: BBSurfaceStyle.borderWidth
+                    DreamColor.stroke.opacity(DreamSurfaceStyle.borderOpacity),
+                    lineWidth: DreamSurfaceStyle.borderWidth
                 )
         }
     }
 }
 
-struct BBPremiumPill: View {
+struct DreamPremiumPill: View {
     let title: String
 
     init(title: String = "高级") {
@@ -317,47 +317,47 @@ struct BBPremiumPill: View {
     }
 
     var body: some View {
-        HStack(spacing: BBSpacing.xs) {
+        HStack(spacing: DreamSpacing.xs) {
             Image(systemName: "checkmark.seal.fill")
                 .font(.system(size: 15, weight: .semibold))
             Text(title)
-                .bbRole(.bodyStrong)
+                .dreamRole(.bodyStrong)
         }
-        .foregroundColor(BBColor.premiumText)
-        .padding(.horizontal, BBSpacing.m)
-        .padding(.vertical, BBSpacing.s)
+        .foregroundColor(DreamColor.premiumText)
+        .padding(.horizontal, DreamSpacing.m)
+        .padding(.vertical, DreamSpacing.s)
         .background(
             Capsule(style: .continuous)
-                .fill(BBColor.premiumFill)
+                .fill(DreamColor.premiumFill)
         )
     }
 }
 
-struct BBFloatingPlusButton: View {
+struct DreamFloatingPlusButton: View {
     var body: some View {
-        RoundedRectangle(cornerRadius: BBDockMetrics.fabCornerRadius, style: .continuous)
-            .fill(BBColor.fabFill)
+        RoundedRectangle(cornerRadius: DreamDockMetrics.fabCornerRadius, style: .continuous)
+            .fill(DreamColor.fabFill)
             .overlay(
-                RoundedRectangle(cornerRadius: BBDockMetrics.fabCornerRadius, style: .continuous)
+                RoundedRectangle(cornerRadius: DreamDockMetrics.fabCornerRadius, style: .continuous)
                     .strokeBorder(
-                        BBColor.innerStroke.opacity(BBFloatingMetrics.innerStrokeOpacity),
-                        lineWidth: BBFloatingMetrics.innerStrokeWidth
+                        DreamColor.innerStroke.opacity(DreamFloatingMetrics.innerStrokeOpacity),
+                        lineWidth: DreamFloatingMetrics.innerStrokeWidth
                     )
             )
             .overlay(
                 Image(systemName: "plus")
-                    .font(.system(size: BBDockMetrics.fabIconSize, weight: .regular))
-                    .foregroundColor(BBColor.inverseText)
+                    .font(.system(size: DreamDockMetrics.fabIconSize, weight: .regular))
+                    .foregroundColor(DreamColor.inverseText)
             )
-            .bbFloatingShadow()
+            .dreamFloatingShadow()
     }
 }
 
-struct BBNeonPhotoFrame<Content: View>: View {
+struct DreamNeonPhotoFrame<Content: View>: View {
     let radius: CGFloat
     private let content: Content
 
-    init(radius: CGFloat = BBCornerRadius.md, @ViewBuilder content: () -> Content) {
+    init(radius: CGFloat = DreamCornerRadius.md, @ViewBuilder content: () -> Content) {
         self.radius = radius
         self.content = content()
     }
@@ -367,10 +367,10 @@ struct BBNeonPhotoFrame<Content: View>: View {
             .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: radius, style: .continuous)
-                    .stroke(BBGradient.photoRing, lineWidth: 2)
+                    .stroke(DreamGradient.photoRing, lineWidth: 2)
             )
-            .shadow(color: BBColor.photoGlowMint.opacity(0.45), radius: 14, x: 0, y: 8)
-            .shadow(color: BBColor.photoGlowViolet.opacity(0.30), radius: 24, x: 0, y: 16)
+            .shadow(color: DreamColor.photoGlowMint.opacity(0.45), radius: 14, x: 0, y: 8)
+            .shadow(color: DreamColor.photoGlowViolet.opacity(0.30), radius: 24, x: 0, y: 16)
     }
 }
 

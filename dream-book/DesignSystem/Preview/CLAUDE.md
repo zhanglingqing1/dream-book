@@ -4,7 +4,7 @@
 成员清单
 DesignSystemPreviewPages.swift: 设计系统预览页面结构编排（含顶部亮暗切换按钮与首页各分区）。
 DesignSystemPreviewAtoms.swift: 预览原子组件与示例组件集合（卡片、按钮、导航等）。
-BellyBookFoundationPreview.swift: 胃之书 Foundation 验收页，集中展示提取后的颜色、排版、表面组件与 Dock/FAB 组合。
+DreamBookFoundationPreview.swift: 梦之书 Foundation 分区页，集中展示颜色系统、排版系统、组件原语与导航系统示例。
 
 法则: 成员完整·一行一文件·父级链接·技术词前置
 
