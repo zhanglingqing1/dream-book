@@ -154,20 +154,27 @@ extension DreamCardSnapshot {
 
 enum DreamCardLayout {
     static let timelineColumnWidth: CGFloat = 62
-    static let timelineTopPadding: CGFloat = 28
+    static let timelineTopPadding: CGFloat = 18
 
-    static let heroHeight: CGFloat = 300
-    static let heroImageWidth: CGFloat = 252
-    static let heroImageHeight: CGFloat = 242
+    static let heroHeight: CGFloat = 256
+    static let heroImageWidth: CGFloat = 224
+    static let heroImageHeight: CGFloat = 212
     static let heroImageRotation: Double = -4
+    static let heroImageOffsetY: CGFloat = 22
 
-    static let insightCardWidth: CGFloat = 248
+    static let insightCardWidth: CGFloat = 232
     static let insightCardRotation: Double = 4.5
-    static let insightCardOffsetX: CGFloat = 72
-    static let insightCardOffsetY: CGFloat = 12
+    static let insightCardOffsetX: CGFloat = 62
+    static let insightCardOffsetY: CGFloat = 10
 
-    static let summaryCardLift: CGFloat = 108
-    static let summaryCardTopPadding: CGFloat = 16
+    static let timelineSummaryRevealHeight: CGFloat = 176
+    static let summaryCardTopPadding: CGFloat = 22
+    static let summaryPanelMinHeight: CGFloat = 156
+    static let summaryBodyLineLimit: Int = 3
+
+    static let detailHeroHeightDelta: CGFloat = 8
+    static let detailTimeClockSize: CGFloat = 38
+    static let detailTimeMeridiemSize: CGFloat = 24
 
     static let sheetCornerRadius: CGFloat = 44
     static let sheetDetentFraction: CGFloat = 0.90
@@ -205,6 +212,22 @@ enum DreamCardFormatters {
         return formatter
     }()
 
+    private static let clockFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.timeZone = timeZone
+        formatter.dateFormat = "hh:mm"
+        return formatter
+    }()
+
+    private static let meridiemFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.timeZone = timeZone
+        formatter.dateFormat = "a"
+        return formatter
+    }()
+
     private static let dayFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = locale
@@ -231,6 +254,14 @@ enum DreamCardFormatters {
 
     static func meridiemTime(from date: Date) -> String {
         timeFormatter.string(from: date)
+    }
+
+    static func clockTime(from date: Date) -> String {
+        clockFormatter.string(from: date)
+    }
+
+    static func meridiemLabel(from date: Date) -> String {
+        meridiemFormatter.string(from: date)
     }
 
     static func dayNumber(from date: Date) -> String {

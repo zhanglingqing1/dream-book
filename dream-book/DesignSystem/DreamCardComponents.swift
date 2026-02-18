@@ -61,7 +61,7 @@ private struct DreamTimelineCardRow: View {
                             .offset(y: DreamCardLayout.heroHeight - DreamCardLayout.summaryCardTopPadding)
                     }
                     .frame(maxWidth: .infinity)
-                    .frame(height: DreamCardLayout.heroHeight + 138)
+                    .frame(height: DreamCardLayout.heroHeight + DreamCardLayout.timelineSummaryRevealHeight)
 
                     Text(DreamCardFormatters.meridiemTime(from: item.recordedAt))
                         .dreamRole(.caption)
@@ -126,11 +126,12 @@ private struct DreamSummaryPanel: View {
                 Text(item.displaySummary)
                     .dreamRole(.body)
                     .foregroundColor(DreamColor.textSecondary)
-                    .lineLimit(2)
+                    .lineLimit(DreamCardLayout.summaryBodyLineLimit)
             }
         }
+        .frame(minHeight: DreamCardLayout.summaryPanelMinHeight, alignment: .topLeading)
         .padding(.horizontal, DreamSpacing.l)
-        .padding(.vertical, DreamSpacing.m)
+        .padding(.vertical, DreamSpacing.l)
         .background(DreamSurfaceCard(radius: DreamCornerRadius.lg, fill: DreamColor.cardStrong))
         .dreamCardShadow()
     }
@@ -148,7 +149,7 @@ struct DreamCardHeroStackView: View {
             DreamHeroMediaCard(media: item.heroMedia)
                 .frame(width: DreamCardLayout.heroImageWidth, height: DreamCardLayout.heroImageHeight)
                 .rotationEffect(.degrees(DreamCardLayout.heroImageRotation))
-                .offset(y: 28)
+                .offset(y: DreamCardLayout.heroImageOffsetY)
 
             DreamInsightOverlayCard(insight: item.insight)
                 .frame(width: DreamCardLayout.insightCardWidth)
@@ -393,7 +394,7 @@ private struct DreamDetailHeroHeader: View {
     var body: some View {
         ZStack(alignment: .topTrailing) {
             DreamCardHeroStackView(item: item)
-                .frame(height: DreamCardLayout.heroHeight + 12)
+                .frame(height: DreamCardLayout.heroHeight + DreamCardLayout.detailHeroHeightDelta)
 
             Button(action: onClose) {
                 Image(systemName: "xmark")
@@ -425,16 +426,16 @@ private struct DreamDetailMetaSection: View {
                 .dreamRole(.navTitle)
                 .foregroundColor(DreamColor.textPrimary)
 
-            HStack(alignment: .firstTextBaseline) {
-                Text(DreamCardFormatters.fullDate(from: item.recordedAt))
-                    .dreamRole(.body)
-                    .foregroundColor(DreamColor.textSecondary)
+            HStack(alignment: .bottom, spacing: DreamSpacing.m) {
+                VStack(alignment: .leading, spacing: DreamSpacing.xxs) {
+                    Text(DreamCardFormatters.fullDate(from: item.recordedAt))
+                        .dreamRole(.body)
+                        .foregroundColor(DreamColor.textSecondary)
+                }
 
                 Spacer(minLength: DreamSpacing.s)
 
-                Text(DreamCardFormatters.meridiemTime(from: item.recordedAt))
-                    .dreamRole(.metric)
-                    .foregroundColor(DreamColor.textPrimary)
+                DreamDetailPrimaryTimeView(date: item.recordedAt)
             }
 
             DreamMetaInfoRow(label: "AI洞察值", value: item.aiInsightValue)
@@ -443,6 +444,39 @@ private struct DreamDetailMetaSection: View {
             Divider()
                 .overlay(DreamColor.stroke.opacity(0.72))
         }
+    }
+}
+
+private struct DreamDetailPrimaryTimeView: View {
+    let date: Date
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.xs) {
+            Text(DreamCardFormatters.clockTime(from: date))
+                .font(
+                    .system(
+                        size: DreamCardLayout.detailTimeClockSize,
+                        weight: .semibold,
+                        design: .default
+                    )
+                )
+                .monospacedDigit()
+                .foregroundColor(DreamColor.textPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
+
+            Text(DreamCardFormatters.meridiemLabel(from: date))
+                .font(
+                    .system(
+                        size: DreamCardLayout.detailTimeMeridiemSize,
+                        weight: .semibold,
+                        design: .serif
+                    )
+                )
+                .foregroundColor(DreamColor.textSecondary)
+                .lineLimit(1)
+        }
+        .fixedSize(horizontal: true, vertical: false)
     }
 }
 
