@@ -103,7 +103,7 @@ private struct DreamSummaryPanel: View {
                 Text(item.dreamTitle)
                     .dreamRole(.navTitle)
                     .foregroundColor(DreamColor.textPrimary)
-                    .lineLimit(1)
+                    .lineLimit(DreamCardLayout.summaryTitleLineLimit)
 
                 Spacer(minLength: DreamSpacing.s)
 
@@ -116,17 +116,26 @@ private struct DreamSummaryPanel: View {
                         Capsule(style: .continuous)
                             .fill(DreamColor.surface)
                     )
+                    .lineLimit(1)
             }
 
-            HStack(alignment: .top, spacing: DreamSpacing.xs) {
-                Text(item.moodEmoji)
-                    .font(.system(size: 22))
-                    .padding(.top, 2)
+            VStack(alignment: .leading, spacing: DreamSpacing.xs) {
+                HStack(alignment: .top, spacing: DreamSpacing.xs) {
+                    Text(item.moodEmoji)
+                        .font(.system(size: 20))
+                        .padding(.top, 1)
 
-                Text(item.displaySummary)
-                    .dreamRole(.body)
+                    Text(item.displaySummary)
+                        .dreamRole(.body)
+                        .foregroundColor(DreamColor.textSecondary)
+                        .lineLimit(DreamCardLayout.summaryBodyLineLimit)
+                        .lineSpacing(3)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
+                Text("情绪：\(item.moodLabel)")
+                    .dreamRole(.caption)
                     .foregroundColor(DreamColor.textSecondary)
-                    .lineLimit(DreamCardLayout.summaryBodyLineLimit)
             }
         }
         .frame(minHeight: DreamCardLayout.summaryPanelMinHeight, alignment: .topLeading)
@@ -429,8 +438,9 @@ private struct DreamDetailMetaSection: View {
             HStack(alignment: .bottom, spacing: DreamSpacing.m) {
                 VStack(alignment: .leading, spacing: DreamSpacing.xxs) {
                     Text(DreamCardFormatters.fullDate(from: item.recordedAt))
-                        .dreamRole(.body)
+                        .dreamRole(.caption)
                         .foregroundColor(DreamColor.textSecondary)
+                        .lineLimit(1)
                 }
 
                 Spacer(minLength: DreamSpacing.s)
@@ -463,7 +473,7 @@ private struct DreamDetailPrimaryTimeView: View {
                 .monospacedDigit()
                 .foregroundColor(DreamColor.textPrimary)
                 .lineLimit(1)
-                .minimumScaleFactor(0.82)
+                .minimumScaleFactor(0.9)
 
             Text(DreamCardFormatters.meridiemLabel(from: date))
                 .font(
@@ -487,7 +497,7 @@ private struct DreamMetaInfoRow: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
             Text(label)
-                .dreamRole(.body)
+                .dreamRole(.caption)
                 .foregroundColor(DreamColor.textSecondary)
 
             Spacer(minLength: DreamSpacing.s)
@@ -512,6 +522,7 @@ private struct DreamDetailTextSection: View {
             Text(content)
                 .dreamRole(.body)
                 .foregroundColor(DreamColor.textPrimary)
+                .lineSpacing(4)
 
             Divider()
                 .overlay(DreamColor.stroke.opacity(0.72))
@@ -532,13 +543,14 @@ private struct DreamDetailOriginalSection: View {
                 Spacer(minLength: DreamSpacing.s)
 
                 Text("1 份")
-                    .dreamRole(.metric)
+                    .dreamRole(.bodyStrong)
                     .foregroundColor(DreamColor.textPrimary)
             }
 
             Text(item.displayOriginalBody)
                 .dreamRole(.body)
                 .foregroundColor(DreamColor.textSecondary)
+                .lineSpacing(4)
         }
     }
 }

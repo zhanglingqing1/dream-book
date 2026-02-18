@@ -154,27 +154,28 @@ extension DreamCardSnapshot {
 
 enum DreamCardLayout {
     static let timelineColumnWidth: CGFloat = 62
-    static let timelineTopPadding: CGFloat = 18
+    static let timelineTopPadding: CGFloat = 14
 
-    static let heroHeight: CGFloat = 256
-    static let heroImageWidth: CGFloat = 224
-    static let heroImageHeight: CGFloat = 212
+    static let heroHeight: CGFloat = 224
+    static let heroImageWidth: CGFloat = 196
+    static let heroImageHeight: CGFloat = 186
     static let heroImageRotation: Double = -4
-    static let heroImageOffsetY: CGFloat = 22
+    static let heroImageOffsetY: CGFloat = 16
 
-    static let insightCardWidth: CGFloat = 232
+    static let insightCardWidth: CGFloat = 208
     static let insightCardRotation: Double = 4.5
-    static let insightCardOffsetX: CGFloat = 62
-    static let insightCardOffsetY: CGFloat = 10
+    static let insightCardOffsetX: CGFloat = 50
+    static let insightCardOffsetY: CGFloat = 6
 
-    static let timelineSummaryRevealHeight: CGFloat = 176
-    static let summaryCardTopPadding: CGFloat = 22
-    static let summaryPanelMinHeight: CGFloat = 156
-    static let summaryBodyLineLimit: Int = 3
+    static let timelineSummaryRevealHeight: CGFloat = 220
+    static let summaryCardTopPadding: CGFloat = 28
+    static let summaryPanelMinHeight: CGFloat = 186
+    static let summaryBodyLineLimit: Int = 4
+    static let summaryTitleLineLimit: Int = 2
 
-    static let detailHeroHeightDelta: CGFloat = 8
-    static let detailTimeClockSize: CGFloat = 38
-    static let detailTimeMeridiemSize: CGFloat = 24
+    static let detailHeroHeightDelta: CGFloat = 2
+    static let detailTimeClockSize: CGFloat = 32
+    static let detailTimeMeridiemSize: CGFloat = 18
 
     static let sheetCornerRadius: CGFloat = 44
     static let sheetDetentFraction: CGFloat = 0.90
