@@ -5,6 +5,8 @@
 DesignSystemProtocol.swift: 设计系统色值常量与语义色基线，作为视觉真相源。
 DesignTokens.swift: 视觉令牌层（颜色、排版、间距、圆角、阴影、组件背景），统一消费双模式色值。
 DreamBookFoundation.swift: 梦之书基础层，承载颜色/排版/几何/阴影/基础容器组件令牌真相源。
+DreamCardKit.swift: 梦境卡片数据契约与布局令牌层，统一定义列表/详情的数据结构、时间格式与回退策略。
+DreamCardComponents.swift: 梦境卡片组件层，封装 Hero 叠层、时间轴列表、Page Sheet 详情与底部操作条。
 DesignSystemPreview.swift: 设计系统预览总入口，当前挂载梦之书 Foundation 分区页并承接后续模块演进。
 Preview/: 设计系统预览页面层与原子组件层。
 

@@ -23,12 +23,34 @@ final class dream_bookUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testDreamCardPageSheetPresentation() throws {
         let app = XCUIApplication()
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        openDreamCardTemplatePage(in: app)
+
+        let firstRow = app.buttons["dream.list.row.0"]
+        XCTAssertTrue(firstRow.waitForExistence(timeout: 2))
+        firstRow.tap()
+
+        let sheet = app.scrollViews["dream.detail.sheet"]
+        XCTAssertTrue(sheet.waitForExistence(timeout: 2))
+
+        let closeButton = app.buttons["dream.detail.close"]
+        XCTAssertTrue(closeButton.waitForExistence(timeout: 2))
+        XCTAssertTrue(closeButton.isHittable)
+        XCTAssertFalse(firstRow.isHittable)
+
+        closeButton.tap()
+        assertElementDisappears(sheet, timeout: 4)
+        XCTAssertTrue(firstRow.waitForExistence(timeout: 2))
+
+        firstRow.tap()
+        let reopenedSheet = app.scrollViews["dream.detail.sheet"]
+        XCTAssertTrue(reopenedSheet.waitForExistence(timeout: 2))
+        reopenedSheet.swipeDown()
+        assertElementDisappears(reopenedSheet, timeout: 4)
+        XCTAssertTrue(firstRow.waitForExistence(timeout: 2))
     }
 
     @MainActor
@@ -37,5 +59,24 @@ final class dream_bookUITests: XCTestCase {
         measure(metrics: [XCTApplicationLaunchMetric()]) {
             XCUIApplication().launch()
         }
+    }
+
+    private func openDreamCardTemplatePage(in app: XCUIApplication) {
+        let entry = app.buttons["dream.preview.templates.entry"]
+
+        var attempts = 0
+        while !entry.isHittable && attempts < 8 {
+            app.swipeUp()
+            attempts += 1
+        }
+
+        XCTAssertTrue(entry.waitForExistence(timeout: 2))
+        entry.tap()
+    }
+
+    private func assertElementDisappears(_ element: XCUIElement, timeout: TimeInterval) {
+        let predicate = NSPredicate(format: "exists == false")
+        expectation(for: predicate, evaluatedWith: element)
+        waitForExpectations(timeout: timeout)
     }
 }

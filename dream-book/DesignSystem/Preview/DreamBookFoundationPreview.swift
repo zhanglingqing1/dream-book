@@ -41,6 +41,7 @@ struct DreamBookFoundationPreview: View {
                     TypographyTokenSection()
                     SurfacePrimitiveSection()
                     NavigationSystemSection()
+                    PageTemplateSection()
                 }
                 .padding(.horizontal, DreamSpacing.l)
                 .padding(.top, DreamSpacing.s)
@@ -192,6 +193,49 @@ private struct NavigationSystemSection: View {
             SectionTitle("导航系统")
 
             BottomDockShowcase()
+        }
+    }
+}
+
+private struct PageTemplateSection: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: DreamSpacing.m) {
+            SectionTitle("页面模板")
+
+            NavigationLink {
+                DreamCardPageTemplatesPreview()
+            } label: {
+                HStack(spacing: DreamSpacing.m) {
+                    Image(systemName: "rectangle.stack.person.crop")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(DreamColor.textPrimary)
+                        .frame(width: 44, height: 44)
+                        .background(
+                            RoundedRectangle(cornerRadius: DreamCornerRadius.sm, style: .continuous)
+                                .fill(DreamColor.surface)
+                        )
+
+                    VStack(alignment: .leading, spacing: DreamSpacing.xxs) {
+                        Text("梦境卡片列表与详情")
+                            .dreamRole(.bodyStrong)
+                            .foregroundColor(DreamColor.textPrimary)
+                        Text("Page Sheet 交互模板")
+                            .dreamRole(.caption)
+                            .foregroundColor(DreamColor.textSecondary)
+                    }
+
+                    Spacer(minLength: DreamSpacing.s)
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(DreamColor.textTertiary)
+                }
+                .padding(DreamSpacing.m)
+                .background(DreamSurfaceCard(radius: DreamCornerRadius.lg, fill: DreamColor.cardStrong))
+                .dreamCardShadow()
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("dream.preview.templates.entry")
         }
     }
 }
