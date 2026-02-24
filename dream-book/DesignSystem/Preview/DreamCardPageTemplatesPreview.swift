@@ -73,7 +73,7 @@ struct DreamCardPageTemplatesPreview: View {
                 onDeepAnalyze: {},
                 onMore: {}
             )
-            .presentationDetents([.fraction(DreamCardLayout.sheetDetentFraction)])
+            .presentationDetents([.fraction(DreamCardLayout.detailSheetDetentFraction)])
             .presentationDragIndicator(.visible)
             .presentationBackgroundInteraction(.disabled)
             .interactiveDismissDisabled(false)

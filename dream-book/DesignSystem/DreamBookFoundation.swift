@@ -75,6 +75,7 @@ enum DreamTypography {
     static let body = Font.system(size: 17, weight: .regular, design: .serif)
     static let bodyStrong = Font.system(size: 17, weight: .semibold, design: .serif)
     static let caption = Font.system(size: 13, weight: .regular, design: .default)
+    static let detailTime = Font.system(size: 30, weight: .semibold, design: .default)
     static let metric = Font.system(size: 48, weight: .semibold, design: .default)
     static let metricUnit = Font.system(size: 20, weight: .semibold, design: .default)
 }
@@ -93,6 +94,7 @@ enum DreamTextRole: String, CaseIterable {
     case body
     case bodyStrong
     case caption
+    case detailTime
     case metric
     case metricUnit
 
@@ -110,6 +112,8 @@ enum DreamTextRole: String, CaseIterable {
             return DreamTextStyle(font: DreamTypography.bodyStrong, tracking: 0.1, lineSpacing: 2, monospacedDigits: false)
         case .caption:
             return DreamTextStyle(font: DreamTypography.caption, tracking: 0.3, lineSpacing: 1, monospacedDigits: false)
+        case .detailTime:
+            return DreamTextStyle(font: DreamTypography.detailTime, tracking: -0.2, lineSpacing: 0, monospacedDigits: true)
         case .metric:
             return DreamTextStyle(font: DreamTypography.metric, tracking: -0.5, lineSpacing: 0, monospacedDigits: true)
         case .metricUnit:
@@ -118,6 +122,53 @@ enum DreamTextRole: String, CaseIterable {
     }
 
     static let previewRoles: [DreamTextRole] = [.navTitle, .cardTitle, .body, .caption, .metric]
+
+    // ---- 排版语义：帮助组件与预览页在同一语言下对齐 ----
+    var usageTitle: String {
+        switch self {
+        case .navTitle:
+            return "页面/区块标题"
+        case .sectionTitle:
+            return "超大章节标题"
+        case .cardTitle:
+            return "主卡片标题"
+        case .body:
+            return "正文内容"
+        case .bodyStrong:
+            return "强调正文"
+        case .caption:
+            return "标签/辅助信息"
+        case .detailTime:
+            return "详情主时间"
+        case .metric:
+            return "单值指标"
+        case .metricUnit:
+            return "指标单位"
+        }
+    }
+
+    var usageNotes: String {
+        switch self {
+        case .navTitle:
+            return "用于页面名、梦境段标题；不要与正文混排在同一行。"
+        case .sectionTitle:
+            return "只用于少数沉浸式封面，不进入常规列表/详情正文。"
+        case .cardTitle:
+            return "用于主视觉卡首屏标题；优先单行，必要时允许两行。"
+        case .body:
+            return "长文本默认角色，保持可读行距；适合叙事与原文。"
+        case .bodyStrong:
+            return "用于关键值、按钮文案、行内重点，不替代标题层级。"
+        case .caption:
+            return "用于时间标签、状态标签、次要说明；避免承载主信息。"
+        case .detailTime:
+            return "详情页时间专用，同一行中的时分/上午下午必须同级。"
+        case .metric:
+            return "用于单值冲击型数字（如评分/热量），避免用于列表行文。"
+        case .metricUnit:
+            return "仅跟随 metric 使用，不单独承担信息层级。"
+        }
+    }
 }
 
 // ============================================================
@@ -133,6 +184,67 @@ enum DreamSpacing {
     static let xl: CGFloat = 24
     static let xxl: CGFloat = 32
     static let xxxl: CGFloat = 40
+}
+
+// ============================================================
+// MARK: - 版式规范令牌（边距 / 内边距 / 节奏）
+// ============================================================
+
+enum DreamLayoutInsets {
+    // ---- 页面外边距 ----
+    static let page = EdgeInsets(
+        top: DreamSpacing.s,
+        leading: DreamSpacing.l,
+        bottom: DreamSpacing.xxxl,
+        trailing: DreamSpacing.l
+    )
+
+    // ---- Sheet 内容区 ----
+    static let sheetContent = EdgeInsets(
+        top: DreamSpacing.l,
+        leading: DreamSpacing.l,
+        bottom: DreamSpacing.xxl,
+        trailing: DreamSpacing.l
+    )
+
+    // ---- 标准卡片内边距 ----
+    static let card = EdgeInsets(
+        top: DreamSpacing.l,
+        leading: DreamSpacing.l,
+        bottom: DreamSpacing.l,
+        trailing: DreamSpacing.l
+    )
+
+    // ---- 紧凑卡片 / 行项目 ----
+    static let compactCard = EdgeInsets(
+        top: DreamSpacing.m,
+        leading: DreamSpacing.m,
+        bottom: DreamSpacing.m,
+        trailing: DreamSpacing.m
+    )
+
+    // ---- 胶囊按钮 / 状态标签 ----
+    static let pill = EdgeInsets(
+        top: DreamSpacing.s,
+        leading: DreamSpacing.m,
+        bottom: DreamSpacing.s,
+        trailing: DreamSpacing.m
+    )
+}
+
+enum DreamLayoutRhythm {
+    // ---- 页面纵向节奏 ----
+    static let pageSectionGap: CGFloat = DreamSpacing.xxl
+    static let majorBlockGap: CGFloat = DreamSpacing.xl
+
+    // ---- 区块内部节奏 ----
+    static let groupGap: CGFloat = DreamSpacing.m
+    static let rowGap: CGFloat = DreamSpacing.s
+    static let tightGap: CGFloat = DreamSpacing.xs
+
+    // ---- 分割线前后呼吸 ----
+    static let dividerTopGap: CGFloat = DreamSpacing.s
+    static let dividerBottomGap: CGFloat = DreamSpacing.s
 }
 
 enum DreamCornerRadius {

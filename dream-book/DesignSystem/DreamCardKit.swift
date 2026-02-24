@@ -153,6 +153,7 @@ extension DreamCardSnapshot {
 // ============================================================
 
 enum DreamCardLayout {
+    // ---- 列表模板 ----
     static let timelineColumnWidth: CGFloat = 62
     static let timelineTopPadding: CGFloat = 14
 
@@ -173,12 +174,45 @@ enum DreamCardLayout {
     static let summaryBodyLineLimit: Int = 4
     static let summaryTitleLineLimit: Int = 2
 
-    static let detailHeroHeightDelta: CGFloat = 2
-    static let detailTimeClockSize: CGFloat = 32
-    static let detailTimeMeridiemSize: CGFloat = 18
+    // ---- 详情模板（Page Sheet）----
+    static let detailSheetDetentFraction: CGFloat = 0.94
+    static let detailSheetTopPadding: CGFloat = 16
+    static let detailSectionSpacing: CGFloat = 24
+    static let detailSectionInnerSpacing: CGFloat = 14
+
+    static let detailHeroContainerHeight: CGFloat = 282
+    static let detailHeroContentHeight: CGFloat = 236
+    static let detailHeroTopPadding: CGFloat = 12
+    static let detailHeroBottomPadding: CGFloat = 24
+
+    static let detailHeroImageWidth: CGFloat = 172
+    static let detailHeroImageHeight: CGFloat = 164
+    static let detailHeroImageRotation: Double = -3.6
+    static let detailHeroImageOffsetY: CGFloat = 14
+
+    static let detailInsightCardWidth: CGFloat = 184
+    static let detailInsightCardRotation: Double = 4.0
+    static let detailInsightCardOffsetX: CGFloat = 42
+    static let detailInsightCardOffsetY: CGFloat = 5
+
+    static let detailCloseButtonSize: CGFloat = 64
+    static let detailCloseButtonInset: CGFloat = 6
+    static let detailCloseButtonIconSize: CGFloat = 24
+
+    static let detailActionBarButtonHeight: CGFloat = 52
+    static let detailActionBarMoreSize: CGFloat = 52
+    static let detailActionBarIconSize: CGFloat = 20
+    static let detailActionBarSpacing: CGFloat = 10
+    static let detailActionBarPlateCornerRadius: CGFloat = 26
+    static let detailActionBarPlateHorizontalPadding: CGFloat = 10
+    static let detailActionBarPlateVerticalPadding: CGFloat = 8
+    static let detailActionBarPlateBottomPadding: CGFloat = 6
+    static let detailActionBarPlateStrokeOpacity: Double = 0.56
+
+    static let detailScrollBottomInset: CGFloat = 162
 
     static let sheetCornerRadius: CGFloat = 44
-    static let sheetDetentFraction: CGFloat = 0.90
+    static let sheetDetentFraction: CGFloat = detailSheetDetentFraction
 }
 
 // ============================================================
