@@ -25,15 +25,20 @@ struct DreamCardPageTemplatesPreview: View {
             DreamColor.canvas
                 .ignoresSafeArea()
 
-            VStack(spacing: DreamSpacing.m) {
+            VStack(spacing: DreamLayoutRhythm.groupGap) {
                 Picker("模板模式", selection: $selectedTemplate) {
                     ForEach(DreamTemplateMode.allCases) { mode in
                         Text(mode.title).tag(mode)
                     }
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal, DreamSpacing.l)
-                .padding(.top, DreamSpacing.s)
+                .padding(.horizontal, DreamLayoutInsets.page.leading)
+                .padding(.top, DreamLayoutInsets.page.top)
+
+                Text(templateInspectionHint)
+                    .dreamRole(.caption)
+                    .foregroundColor(DreamColor.textSecondary)
+                    .padding(.horizontal, DreamLayoutInsets.page.leading)
 
                 Group {
                     switch selectedTemplate {
@@ -42,25 +47,18 @@ struct DreamCardPageTemplatesPreview: View {
                             selectedItem = item
                         }
                     case .detail:
-                        ScrollView {
-                            DreamCardDetailSheetView(
-                                item: mockItems[0],
-                                onClose: {},
-                                onShare: {},
-                                onDeepAnalyze: {},
-                                onMore: {}
-                            )
-                            .clipShape(
-                                RoundedRectangle(
-                                    cornerRadius: DreamCardLayout.sheetCornerRadius,
-                                    style: .continuous
-                                )
-                            )
-                            .padding(.horizontal, DreamSpacing.l)
-                            .padding(.bottom, DreamSpacing.xxl)
-                        }
+                        DreamCardDetailSheetView(
+                            item: mockItems[0],
+                            onClose: {},
+                            onShare: {},
+                            onDeepAnalyze: {},
+                            onMore: {}
+                        )
+                        // ---- 静态结构预览需要裁掉内部 ignoresSafeArea 外溢，但不能伪装成系统 Sheet 容器 ----
+                        .clipped()
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
         .navigationTitle("梦境卡片模板")
@@ -78,6 +76,16 @@ struct DreamCardPageTemplatesPreview: View {
             .presentationBackgroundInteraction(.disabled)
             .interactiveDismissDisabled(false)
             .presentationCornerRadius(DreamCardLayout.sheetCornerRadius)
+            .presentationSizing(.page)
+        }
+    }
+
+    private var templateInspectionHint: String {
+        switch selectedTemplate {
+        case .list:
+            return "点击列表卡片，使用真实 Page Sheet 路径验收顶部净空、底部安全区与交互。"
+        case .detail:
+            return "详情结构页签是静态内容预览（非系统 Sheet 容器）；Page Sheet 外边距/圆角/安全区请回到列表模板点击卡片验证。"
         }
     }
 }
@@ -93,7 +101,7 @@ private enum DreamTemplateMode: String, CaseIterable, Identifiable {
         case .list:
             return "列表模板"
         case .detail:
-            return "详情模板"
+            return "详情结构"
         }
     }
 }

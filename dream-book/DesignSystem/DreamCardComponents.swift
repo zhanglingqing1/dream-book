@@ -25,16 +25,14 @@ struct DreamTimelineCardListView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: DreamSpacing.xxl) {
+            LazyVStack(alignment: .leading, spacing: DreamCardLayout.timelineRowSpacing) {
                 ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                     DreamTimelineCardRow(index: index, item: item) {
                         onSelect(item)
                     }
                 }
             }
-            .padding(.horizontal, DreamSpacing.l)
-            .padding(.top, DreamSpacing.s)
-            .padding(.bottom, DreamSpacing.xxxl)
+            .padding(DreamCardLayout.listContentInsets)
         }
         .background(DreamColor.canvas)
     }
@@ -47,12 +45,12 @@ private struct DreamTimelineCardRow: View {
 
     var body: some View {
         Button(action: onTap) {
-            HStack(alignment: .top, spacing: DreamSpacing.m) {
+            HStack(alignment: .top, spacing: DreamCardLayout.timelineRowContentSpacing) {
                 DreamTimelineDateColumn(date: item.recordedAt)
                     .frame(width: DreamCardLayout.timelineColumnWidth)
                     .padding(.top, DreamCardLayout.timelineTopPadding)
 
-                VStack(alignment: .leading, spacing: DreamSpacing.s) {
+                VStack(alignment: .leading, spacing: 0) {
                     ZStack(alignment: .topLeading) {
                         DreamCardHeroStackView(item: item)
                             .frame(height: DreamCardLayout.heroHeight)
@@ -62,11 +60,6 @@ private struct DreamTimelineCardRow: View {
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: DreamCardLayout.heroHeight + DreamCardLayout.timelineSummaryRevealHeight)
-
-                    Text(DreamCardFormatters.meridiemTime(from: item.recordedAt))
-                        .dreamRole(.caption)
-                        .foregroundColor(DreamColor.textSecondary)
-                        .padding(.leading, DreamSpacing.xs)
                 }
             }
             .contentShape(Rectangle())
@@ -80,7 +73,7 @@ private struct DreamTimelineDateColumn: View {
     let date: Date
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DreamSpacing.xs) {
+        VStack(alignment: .leading, spacing: DreamLayoutRhythm.tightGap) {
             Text(DreamCardFormatters.dayNumber(from: date))
                 .dreamRole(.metric)
                 .foregroundColor(DreamColor.textPrimary)
@@ -88,7 +81,7 @@ private struct DreamTimelineDateColumn: View {
                 .minimumScaleFactor(0.8)
 
             Text(DreamCardFormatters.monthNumber(from: date))
-                .dreamRole(.body)
+                .dreamRole(.caption)
                 .foregroundColor(DreamColor.textSecondary)
         }
     }
@@ -98,7 +91,7 @@ private struct DreamSummaryPanel: View {
     let item: DreamCardSnapshot
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DreamSpacing.s) {
+        VStack(alignment: .leading, spacing: DreamCardLayout.summaryPanelGroupSpacing) {
             HStack(alignment: .top) {
                 Text(item.dreamTitle)
                     .dreamRole(.navTitle)
@@ -110,8 +103,7 @@ private struct DreamSummaryPanel: View {
                 Text(item.sceneTag)
                     .dreamRole(.caption)
                     .foregroundColor(DreamColor.textSecondary)
-                    .padding(.horizontal, DreamSpacing.s)
-                    .padding(.vertical, DreamSpacing.xs)
+                    .padding(DreamCardLayout.summaryPanelPillInsets)
                     .background(
                         Capsule(style: .continuous)
                             .fill(DreamColor.surface)
@@ -119,28 +111,35 @@ private struct DreamSummaryPanel: View {
                     .lineLimit(1)
             }
 
-            VStack(alignment: .leading, spacing: DreamSpacing.xs) {
-                HStack(alignment: .top, spacing: DreamSpacing.xs) {
-                    Text(item.moodEmoji)
-                        .font(.system(size: 20))
-                        .padding(.top, 1)
+            HStack(alignment: .top, spacing: DreamCardLayout.summaryPanelTightSpacing) {
+                Text(item.moodEmoji)
+                    .font(.system(size: 20))
+                    .padding(.top, 1)
 
-                    Text(item.displaySummary)
-                        .dreamRole(.body)
-                        .foregroundColor(DreamColor.textSecondary)
-                        .lineLimit(DreamCardLayout.summaryBodyLineLimit)
-                        .lineSpacing(3)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
+                Text(item.displaySummary)
+                    .dreamRole(.body)
+                    .foregroundColor(DreamColor.textSecondary)
+                    .lineLimit(DreamCardLayout.summaryBodyLineLimit)
+                    .lineSpacing(3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
 
+            Spacer(minLength: DreamCardLayout.summaryPanelFooterMinGap)
+
+            HStack(alignment: .firstTextBaseline, spacing: DreamCardLayout.summaryPanelRowSpacing) {
                 Text("情绪：\(item.moodLabel)")
+                    .dreamRole(.caption)
+                    .foregroundColor(DreamColor.textSecondary)
+
+                Spacer(minLength: DreamSpacing.s)
+
+                Text(DreamCardFormatters.meridiemTime(from: item.recordedAt))
                     .dreamRole(.caption)
                     .foregroundColor(DreamColor.textSecondary)
             }
         }
         .frame(minHeight: DreamCardLayout.summaryPanelMinHeight, alignment: .topLeading)
-        .padding(.horizontal, DreamSpacing.l)
-        .padding(.vertical, DreamSpacing.l)
+        .padding(DreamCardLayout.summaryPanelInsets)
         .background(DreamSurfaceCard(radius: DreamCornerRadius.lg, fill: DreamColor.cardStrong))
         .dreamCardShadow()
     }
@@ -385,6 +384,8 @@ struct DreamCardDetailSheetView: View {
             DreamColor.canvas
                 .ignoresSafeArea()
 
+            DreamDetailActionBarBottomSafeAreaFill()
+
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: DreamCardLayout.detailSectionSpacing) {
                     DreamDetailHeroHeader(item: item, onClose: handleClose)
@@ -398,27 +399,48 @@ struct DreamCardDetailSheetView: View {
 
                     DreamDetailOriginalSection(item: item)
                 }
-                .padding(.horizontal, DreamSpacing.l)
-                .padding(.top, DreamCardLayout.detailSheetTopPadding)
-                .padding(.bottom, DreamCardLayout.detailScrollBottomInset)
+                .padding(.horizontal, DreamCardLayout.detailContentInsets.leading)
+                .padding(.top, DreamCardLayout.detailContentInsets.top)
+                .padding(.bottom, DreamCardLayout.detailActionBarContentClearance)
             }
             .accessibilityIdentifier("dream.detail.sheet")
-        }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            DreamDetailActionBarPlate {
-                DreamDetailActionBar(
-                    onShare: onShare,
-                    onDeepAnalyze: onDeepAnalyze,
-                    onMore: onMore
-                )
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                DreamDetailActionBarPlate {
+                    DreamDetailActionBar(
+                        onShare: onShare,
+                        onDeepAnalyze: onDeepAnalyze,
+                        onMore: onMore
+                    )
+                }
             }
-            .padding(.horizontal, DreamSpacing.l)
-            .padding(.bottom, DreamCardLayout.detailActionBarPlateBottomPadding)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     private func handleClose() {
         onClose()
+    }
+}
+
+private struct DreamDetailActionBarBottomSafeAreaFill: View {
+    var body: some View {
+        GeometryReader { proxy in
+            let fillHeight = proxy.safeAreaInsets.bottom + DreamCardLayout.detailActionBarBottomSafeAreaOverlap
+
+            if fillHeight > 0 {
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                    .overlay {
+                        DreamColor.canvas.opacity(DreamCardLayout.detailActionBarBackdropTintOpacity)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: fillHeight)
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+                    .ignoresSafeArea(edges: .bottom)
+            }
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 
@@ -430,7 +452,7 @@ private struct DreamDetailHeroHeader: View {
         ZStack(alignment: .topTrailing) {
             DreamDetailHeroStackView(item: item)
                 .frame(height: DreamCardLayout.detailHeroContentHeight)
-                .padding(.top, DreamCardLayout.detailHeroTopPadding)
+                .padding(.top, DreamCardLayout.detailHeroDragIndicatorClearance + DreamCardLayout.detailHeroTopPadding)
                 .padding(.bottom, DreamCardLayout.detailHeroBottomPadding)
 
             Button(action: onClose) {
@@ -452,7 +474,7 @@ private struct DreamDetailHeroHeader: View {
             }
             .buttonStyle(.plain)
             .dreamFloatingShadow()
-            .padding(.top, DreamCardLayout.detailCloseButtonInset)
+            .padding(.top, DreamCardLayout.detailHeroDragIndicatorClearance + DreamCardLayout.detailCloseButtonInset)
             .padding(.trailing, DreamCardLayout.detailCloseButtonInset)
             .accessibilityLabel("关闭详情")
             .accessibilityIdentifier("dream.detail.close")
@@ -471,7 +493,7 @@ private struct DreamDetailMetaSection: View {
                 .foregroundColor(DreamColor.textPrimary)
 
             HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.m) {
-                VStack(alignment: .leading, spacing: DreamSpacing.xxs) {
+                VStack(alignment: .leading, spacing: DreamLayoutRhythm.tightGap) {
                     Text(DreamCardFormatters.fullDate(from: item.recordedAt))
                         .dreamRole(.caption)
                         .foregroundColor(DreamColor.textSecondary)
@@ -488,7 +510,7 @@ private struct DreamDetailMetaSection: View {
 
             Divider()
                 .overlay(DreamColor.stroke.opacity(0.72))
-                .padding(.top, DreamSpacing.xs)
+                .padding(.top, DreamCardLayout.detailDividerTopPadding)
         }
     }
 }
@@ -497,7 +519,7 @@ private struct DreamDetailPrimaryTimeView: View {
     let date: Date
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.xs) {
+        HStack(alignment: .firstTextBaseline, spacing: DreamLayoutRhythm.tightGap) {
             Text(DreamCardFormatters.clockTime(from: date))
                 .dreamRole(.detailTime)
                 .foregroundColor(DreamColor.textPrimary)
@@ -549,7 +571,7 @@ private struct DreamDetailTextSection: View {
 
             Divider()
                 .overlay(DreamColor.stroke.opacity(0.72))
-                .padding(.top, DreamSpacing.s)
+                .padding(.top, DreamCardLayout.detailDividerTopPadding)
         }
     }
 }
@@ -608,7 +630,7 @@ private struct DreamActionCapsuleButton: View {
             Text(title)
                 .dreamRole(.bodyStrong)
                 .foregroundColor(DreamColor.textPrimary)
-                .padding(.horizontal, DreamSpacing.l)
+                .padding(.horizontal, DreamLayoutInsets.pill.leading)
                 .frame(height: DreamCardLayout.detailActionBarButtonHeight)
                 .frame(maxWidth: .infinity)
                 .background(
@@ -659,26 +681,50 @@ private struct DreamDetailActionBarPlate<Content: View>: View {
     }
 
     var body: some View {
-        content
-            .padding(.horizontal, DreamCardLayout.detailActionBarPlateHorizontalPadding)
-            .padding(.vertical, DreamCardLayout.detailActionBarPlateVerticalPadding)
-            .background(
-                RoundedRectangle(
-                    cornerRadius: DreamCardLayout.detailActionBarPlateCornerRadius,
-                    style: .continuous
-                )
+        VStack(spacing: 0) {
+            // ---- 顶部柔和过渡：让底部模糊区像从内容里“浮现”出来 ----
+            Color.clear
+                .frame(height: DreamCardLayout.detailActionBarBackdropTopFadeHeight)
+
+            content
+                .padding(.horizontal, DreamCardLayout.detailActionBarPlateHorizontalPadding)
+                .padding(.vertical, DreamCardLayout.detailActionBarPlateVerticalPadding)
+                .padding(.horizontal, DreamCardLayout.detailContentInsets.leading)
+                .padding(.bottom, DreamCardLayout.detailActionBarPlateBottomPadding)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, DreamCardLayout.detailActionBarBackdropHorizontalInset)
+        .background(alignment: .bottom) {
+            ZStack(alignment: .top) {
+                Rectangle()
                 .fill(.ultraThinMaterial)
-                .overlay(
-                    RoundedRectangle(
-                        cornerRadius: DreamCardLayout.detailActionBarPlateCornerRadius,
-                        style: .continuous
-                    )
-                    .stroke(
-                        DreamColor.stroke.opacity(DreamCardLayout.detailActionBarPlateStrokeOpacity),
-                        lineWidth: DreamStroke.hairline
-                    )
+
+                LinearGradient(
+                    colors: [
+                        DreamColor.canvas.opacity(0),
+                        DreamColor.canvas.opacity(DreamCardLayout.detailActionBarBackdropTintOpacity)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                Rectangle()
+                    .fill(DreamColor.stroke.opacity(DreamCardLayout.detailActionBarBackdropTopStrokeOpacity))
+                    .frame(height: DreamStroke.hairline)
+            }
+            .compositingGroup()
+            .mask(
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear, location: 0),
+                        .init(color: .black, location: 0.22),
+                        .init(color: .black, location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
                 )
             )
-            .dreamDockShadow()
+            .ignoresSafeArea(edges: .bottom)
+        }
     }
 }

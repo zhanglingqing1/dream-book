@@ -154,6 +154,9 @@ extension DreamCardSnapshot {
 
 enum DreamCardLayout {
     // ---- 列表模板 ----
+    static let listContentInsets: EdgeInsets = DreamLayoutInsets.page
+    static let timelineRowSpacing: CGFloat = DreamLayoutRhythm.pageSectionGap
+    static let timelineRowContentSpacing: CGFloat = DreamLayoutRhythm.groupGap
     static let timelineColumnWidth: CGFloat = 62
     static let timelineTopPadding: CGFloat = 14
 
@@ -168,22 +171,37 @@ enum DreamCardLayout {
     static let insightCardOffsetX: CGFloat = 50
     static let insightCardOffsetY: CGFloat = 6
 
-    static let timelineSummaryRevealHeight: CGFloat = 220
+    static let timelineSummaryBottomBreathing: CGFloat = DreamLayoutRhythm.groupGap
     static let summaryCardTopPadding: CGFloat = 28
     static let summaryPanelMinHeight: CGFloat = 186
     static let summaryBodyLineLimit: Int = 4
     static let summaryTitleLineLimit: Int = 2
+    static let summaryPanelInsets: EdgeInsets = DreamLayoutInsets.card
+    static let summaryPanelPillInsets: EdgeInsets = DreamLayoutInsets.pill
+    static let summaryPanelGroupSpacing: CGFloat = DreamLayoutRhythm.groupGap
+    static let summaryPanelRowSpacing: CGFloat = DreamLayoutRhythm.rowGap
+    static let summaryPanelTightSpacing: CGFloat = DreamLayoutRhythm.tightGap
+    static let summaryPanelFooterMinGap: CGFloat = DreamLayoutRhythm.groupGap
+
+    static var timelineSummaryRevealHeight: CGFloat {
+        summaryPanelMinHeight - summaryCardTopPadding + timelineSummaryBottomBreathing
+    }
 
     // ---- 详情模板（Page Sheet）----
     static let detailSheetDetentFraction: CGFloat = 0.94
-    static let detailSheetTopPadding: CGFloat = 16
-    static let detailSectionSpacing: CGFloat = 24
-    static let detailSectionInnerSpacing: CGFloat = 14
+    static let detailContentInsets: EdgeInsets = DreamLayoutInsets.sheetContent
+    static let detailSheetTopPadding: CGFloat = DreamLayoutInsets.sheetContent.top
+    static let detailSectionSpacing: CGFloat = DreamLayoutRhythm.majorBlockGap
+    static let detailSectionInnerSpacing: CGFloat = DreamLayoutRhythm.groupGap
+    static let detailDividerTopPadding: CGFloat = DreamLayoutRhythm.dividerTopGap
+    static let detailHeroDragIndicatorClearance: CGFloat = DreamSpacing.s
 
-    static let detailHeroContainerHeight: CGFloat = 282
     static let detailHeroContentHeight: CGFloat = 236
     static let detailHeroTopPadding: CGFloat = 12
     static let detailHeroBottomPadding: CGFloat = 24
+    static var detailHeroContainerHeight: CGFloat {
+        detailHeroDragIndicatorClearance + detailHeroTopPadding + detailHeroContentHeight + detailHeroBottomPadding
+    }
 
     static let detailHeroImageWidth: CGFloat = 172
     static let detailHeroImageHeight: CGFloat = 164
@@ -207,9 +225,13 @@ enum DreamCardLayout {
     static let detailActionBarPlateHorizontalPadding: CGFloat = 10
     static let detailActionBarPlateVerticalPadding: CGFloat = 8
     static let detailActionBarPlateBottomPadding: CGFloat = 6
+    static let detailActionBarBackdropTopFadeHeight: CGFloat = 28
+    static let detailActionBarBackdropHorizontalInset: CGFloat = 0
+    static let detailActionBarBackdropTopStrokeOpacity: Double = 0.28
+    static let detailActionBarBackdropTintOpacity: Double = 0.08
+    static let detailActionBarBottomSafeAreaOverlap: CGFloat = 8
     static let detailActionBarPlateStrokeOpacity: Double = 0.56
-
-    static let detailScrollBottomInset: CGFloat = 162
+    static let detailActionBarContentClearance: CGFloat = 0
 
     static let sheetCornerRadius: CGFloat = 44
     static let sheetDetentFraction: CGFloat = detailSheetDetentFraction
