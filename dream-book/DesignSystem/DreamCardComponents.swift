@@ -60,6 +60,12 @@ private struct DreamTimelineCardRow: View {
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: DreamCardLayout.heroHeight + DreamCardLayout.timelineSummaryRevealHeight)
+
+                    // ---- 时间标签：卡片外部下方独立呈现 ----
+                    Text(DreamCardFormatters.clockTime(from: item.recordedAt))
+                        .dreamRole(.caption)
+                        .foregroundColor(DreamColor.textSecondary)
+                        .padding(.top, DreamCardLayout.summaryTimeTopPadding)
                 }
             }
             .contentShape(Rectangle())
@@ -73,7 +79,8 @@ private struct DreamTimelineDateColumn: View {
     let date: Date
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DreamLayoutRhythm.tightGap) {
+        // ---- 日号 + 月号下标：水平基线对齐 ----
+        HStack(alignment: .lastTextBaseline, spacing: 2) {
             Text(DreamCardFormatters.dayNumber(from: date))
                 .dreamRole(.metric)
                 .foregroundColor(DreamColor.textPrimary)
@@ -92,25 +99,13 @@ private struct DreamSummaryPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DreamCardLayout.summaryPanelGroupSpacing) {
-            HStack(alignment: .top) {
-                Text(item.dreamTitle)
-                    .dreamRole(.navTitle)
-                    .foregroundColor(DreamColor.textPrimary)
-                    .lineLimit(DreamCardLayout.summaryTitleLineLimit)
+            // ---- 标题独占一行 ----
+            Text(item.dreamTitle)
+                .dreamRole(.navTitle)
+                .foregroundColor(DreamColor.textPrimary)
+                .lineLimit(DreamCardLayout.summaryTitleLineLimit)
 
-                Spacer(minLength: DreamSpacing.s)
-
-                Text(item.sceneTag)
-                    .dreamRole(.caption)
-                    .foregroundColor(DreamColor.textSecondary)
-                    .padding(DreamCardLayout.summaryPanelPillInsets)
-                    .background(
-                        Capsule(style: .continuous)
-                            .fill(DreamColor.surface)
-                    )
-                    .lineLimit(1)
-            }
-
+            // ---- 正文区：emoji + 摘要 + 标签 pill ----
             HStack(alignment: .top, spacing: DreamCardLayout.summaryPanelTightSpacing) {
                 Text(item.moodEmoji)
                     .font(.system(size: 20))
@@ -122,20 +117,17 @@ private struct DreamSummaryPanel: View {
                     .lineLimit(DreamCardLayout.summaryBodyLineLimit)
                     .lineSpacing(3)
                     .frame(maxWidth: .infinity, alignment: .leading)
-            }
 
-            Spacer(minLength: DreamCardLayout.summaryPanelFooterMinGap)
-
-            HStack(alignment: .firstTextBaseline, spacing: DreamCardLayout.summaryPanelRowSpacing) {
-                Text("情绪：\(item.moodLabel)")
+                Text(item.sceneTag)
                     .dreamRole(.caption)
                     .foregroundColor(DreamColor.textSecondary)
-
-                Spacer(minLength: DreamSpacing.s)
-
-                Text(DreamCardFormatters.meridiemTime(from: item.recordedAt))
-                    .dreamRole(.caption)
-                    .foregroundColor(DreamColor.textSecondary)
+                    .padding(.vertical, DreamCardLayout.summaryTagPillVerticalPadding)
+                    .padding(.horizontal, DreamCardLayout.summaryTagPillHorizontalPadding)
+                    .background(
+                        Capsule(style: .continuous)
+                            .fill(DreamColor.surface)
+                    )
+                    .lineLimit(1)
             }
         }
         .frame(minHeight: DreamCardLayout.summaryPanelMinHeight, alignment: .topLeading)

@@ -157,7 +157,7 @@ enum DreamCardLayout {
     static let listContentInsets: EdgeInsets = DreamLayoutInsets.page
     static let timelineRowSpacing: CGFloat = DreamLayoutRhythm.pageSectionGap
     static let timelineRowContentSpacing: CGFloat = DreamLayoutRhythm.groupGap
-    static let timelineColumnWidth: CGFloat = 62
+    static let timelineColumnWidth: CGFloat = 74
     static let timelineTopPadding: CGFloat = 14
 
     static let heroHeight: CGFloat = 224
@@ -173,7 +173,7 @@ enum DreamCardLayout {
 
     static let timelineSummaryBottomBreathing: CGFloat = DreamLayoutRhythm.groupGap
     static let summaryCardTopPadding: CGFloat = 28
-    static let summaryPanelMinHeight: CGFloat = 186
+    static let summaryPanelMinHeight: CGFloat = 150
     static let summaryBodyLineLimit: Int = 4
     static let summaryTitleLineLimit: Int = 2
     static let summaryPanelInsets: EdgeInsets = DreamLayoutInsets.card
@@ -181,7 +181,9 @@ enum DreamCardLayout {
     static let summaryPanelGroupSpacing: CGFloat = DreamLayoutRhythm.groupGap
     static let summaryPanelRowSpacing: CGFloat = DreamLayoutRhythm.rowGap
     static let summaryPanelTightSpacing: CGFloat = DreamLayoutRhythm.tightGap
-    static let summaryPanelFooterMinGap: CGFloat = DreamLayoutRhythm.groupGap
+    static let summaryTimeTopPadding: CGFloat = DreamLayoutRhythm.tightGap
+    static let summaryTagPillVerticalPadding: CGFloat = 6
+    static let summaryTagPillHorizontalPadding: CGFloat = DreamSpacing.s
 
     static var timelineSummaryRevealHeight: CGFloat {
         summaryPanelMinHeight - summaryCardTopPadding + timelineSummaryBottomBreathing
@@ -213,9 +215,9 @@ enum DreamCardLayout {
     static let detailInsightCardOffsetX: CGFloat = 42
     static let detailInsightCardOffsetY: CGFloat = 5
 
-    static let detailCloseButtonSize: CGFloat = 64
-    static let detailCloseButtonInset: CGFloat = 6
-    static let detailCloseButtonIconSize: CGFloat = 24
+    static let detailCloseButtonSize: CGFloat = 44
+    static let detailCloseButtonInset: CGFloat = 8
+    static let detailCloseButtonIconSize: CGFloat = 16
 
     static let detailActionBarButtonHeight: CGFloat = 52
     static let detailActionBarMoreSize: CGFloat = 52
