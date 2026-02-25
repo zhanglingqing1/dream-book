@@ -235,7 +235,7 @@ enum DreamCardLayout {
     static let detailActionBarPlateStrokeOpacity: Double = 0.56
     static let detailActionBarContentClearance: CGFloat = 0
 
-    static let sheetCornerRadius: CGFloat = 44
+    static let sheetCornerRadius: CGFloat = 24
     static let sheetDetentFraction: CGFloat = detailSheetDetentFraction
 }
 

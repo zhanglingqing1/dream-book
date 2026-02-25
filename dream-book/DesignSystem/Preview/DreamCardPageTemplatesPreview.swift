@@ -15,8 +15,11 @@
 import SwiftUI
 
 struct DreamCardPageTemplatesPreview: View {
+    private static let v2NativeListEntryID = UUID(uuidString: "4B9F722C-B29E-4A92-9D46-8E810B7FC0A2")!
+
     @State private var selectedTemplate: DreamTemplateMode = .list
     @State private var selectedItem: DreamCardSnapshot?
+    @State private var selectedItemV2: DreamCardSnapshot?
 
     private let mockItems = DreamCardMockData.samples
 
@@ -43,7 +46,11 @@ struct DreamCardPageTemplatesPreview: View {
                 Group {
                     switch selectedTemplate {
                     case .list:
-                        DreamTimelineCardListView(items: mockItems) { item in
+                        DreamTimelineCardListView(items: listItemsWithNativeV2Entry) { item in
+                            if item.id == Self.v2NativeListEntryID {
+                                selectedItemV2 = mockItems[0]
+                                return
+                            }
                             selectedItem = item
                         }
                     case .detail:
@@ -54,8 +61,6 @@ struct DreamCardPageTemplatesPreview: View {
                             onDeepAnalyze: {},
                             onMore: {}
                         )
-                        // ---- 静态结构预览需要裁掉内部 ignoresSafeArea 外溢，但不能伪装成系统 Sheet 容器 ----
-                        .clipped()
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -71,12 +76,23 @@ struct DreamCardPageTemplatesPreview: View {
                 onDeepAnalyze: {},
                 onMore: {}
             )
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .presentationBackground(.red)
             .presentationDetents([.fraction(DreamCardLayout.detailSheetDetentFraction)])
             .presentationDragIndicator(.visible)
             .presentationBackgroundInteraction(.disabled)
             .interactiveDismissDisabled(false)
             .presentationCornerRadius(DreamCardLayout.sheetCornerRadius)
             .presentationSizing(.page)
+        }
+        .sheet(item: $selectedItemV2) { item in
+            DreamCardDetailSheetView_V2(
+                item: item,
+                onClose: { selectedItemV2 = nil },
+                onShare: {},
+                onDeepAnalyze: {},
+                onMore: {}
+            )
         }
     }
 
@@ -87,6 +103,32 @@ struct DreamCardPageTemplatesPreview: View {
         case .detail:
             return "详情结构页签是静态内容预览（非系统 Sheet 容器）；Page Sheet 外边距/圆角/安全区请回到列表模板点击卡片验证。"
         }
+    }
+
+    private var listItemsWithNativeV2Entry: [DreamCardSnapshot] {
+        mockItems + [v2NativeListEntry]
+    }
+
+    private var v2NativeListEntry: DreamCardSnapshot {
+        let base = mockItems[0]
+
+        return DreamCardSnapshot(
+            id: Self.v2NativeListEntryID,
+            recordedAt: base.recordedAt,
+            dreamTitle: "\(base.dreamTitle) (V2 原生版)",
+            dreamSummary: base.dreamSummary,
+            moodEmoji: base.moodEmoji,
+            moodLabel: base.moodLabel,
+            sceneTag: base.sceneTag,
+            heroMedia: base.heroMedia,
+            insight: base.insight,
+            aiInsightValue: base.aiInsightValue,
+            keywordCount: base.keywordCount,
+            narrativeTitle: base.narrativeTitle,
+            narrativeBody: base.narrativeBody,
+            originalTitle: base.originalTitle,
+            originalBody: base.originalBody
+        )
     }
 }
 
