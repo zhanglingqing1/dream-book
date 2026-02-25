@@ -6,20 +6,16 @@
 //
 
 /**
- * [INPUT]: 依赖 SwiftUI 的 sheet/presentationDetents 能力，依赖 DreamCardKit 与 DreamCardComponents
- * [OUTPUT]: 对外提供梦境卡片页面模板预览（列表模板 + 详情模板 + Page Sheet 路由示例）
- * [POS]: DesignSystem/Preview/ 的页面模板文件，承接梦境卡片组件的交互验收与视觉对齐
+ * [INPUT]: 依赖 SwiftUI 的 sheet 导航能力，依赖 DreamCardKit 与 DreamCardComponents
+ * [OUTPUT]: 对外提供梦境卡片页面模板预览（双卡列表 + 原生 Sheet 详情路由）
+ * [POS]: DesignSystem/Preview/ 的页面模板文件，承接梦境卡片组件的底部弹窗验收与视觉对齐
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
 import SwiftUI
 
 struct DreamCardPageTemplatesPreview: View {
-    private static let v2NativeListEntryID = UUID(uuidString: "4B9F722C-B29E-4A92-9D46-8E810B7FC0A2")!
-
-    @State private var selectedTemplate: DreamTemplateMode = .list
     @State private var selectedItem: DreamCardSnapshot?
-    @State private var selectedItemV2: DreamCardSnapshot?
 
     private let mockItems = DreamCardMockData.samples
 
@@ -28,43 +24,10 @@ struct DreamCardPageTemplatesPreview: View {
             DreamColor.canvas
                 .ignoresSafeArea()
 
-            VStack(spacing: DreamLayoutRhythm.groupGap) {
-                Picker("模板模式", selection: $selectedTemplate) {
-                    ForEach(DreamTemplateMode.allCases) { mode in
-                        Text(mode.title).tag(mode)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, DreamLayoutInsets.page.leading)
-                .padding(.top, DreamLayoutInsets.page.top)
-
-                Text(templateInspectionHint)
-                    .dreamRole(.caption)
-                    .foregroundColor(DreamColor.textSecondary)
-                    .padding(.horizontal, DreamLayoutInsets.page.leading)
-
-                Group {
-                    switch selectedTemplate {
-                    case .list:
-                        DreamTimelineCardListView(items: listItemsWithNativeV2Entry) { item in
-                            if item.id == Self.v2NativeListEntryID {
-                                selectedItemV2 = mockItems[0]
-                                return
-                            }
-                            selectedItem = item
-                        }
-                    case .detail:
-                        DreamCardDetailSheetView(
-                            item: mockItems[0],
-                            onClose: {},
-                            onShare: {},
-                            onDeepAnalyze: {},
-                            onMore: {}
-                        )
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            DreamTimelineCardListView(items: templateListItems) { item in
+                selectedItem = item
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .navigationTitle("梦境卡片模板")
         .navigationBarTitleDisplayMode(.inline)
@@ -76,75 +39,11 @@ struct DreamCardPageTemplatesPreview: View {
                 onDeepAnalyze: {},
                 onMore: {}
             )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .presentationBackground(.red)
-            .presentationDetents([.fraction(DreamCardLayout.detailSheetDetentFraction)])
-            .presentationDragIndicator(.visible)
-            .presentationBackgroundInteraction(.disabled)
-            .interactiveDismissDisabled(false)
-            .presentationCornerRadius(DreamCardLayout.sheetCornerRadius)
-            .presentationSizing(.page)
-        }
-        .sheet(item: $selectedItemV2) { item in
-            DreamCardDetailSheetView_V2(
-                item: item,
-                onClose: { selectedItemV2 = nil },
-                onShare: {},
-                onDeepAnalyze: {},
-                onMore: {}
-            )
         }
     }
 
-    private var templateInspectionHint: String {
-        switch selectedTemplate {
-        case .list:
-            return "点击列表卡片，使用真实 Page Sheet 路径验收顶部净空、底部安全区与交互。"
-        case .detail:
-            return "详情结构页签是静态内容预览（非系统 Sheet 容器）；Page Sheet 外边距/圆角/安全区请回到列表模板点击卡片验证。"
-        }
-    }
-
-    private var listItemsWithNativeV2Entry: [DreamCardSnapshot] {
-        mockItems + [v2NativeListEntry]
-    }
-
-    private var v2NativeListEntry: DreamCardSnapshot {
-        let base = mockItems[0]
-
-        return DreamCardSnapshot(
-            id: Self.v2NativeListEntryID,
-            recordedAt: base.recordedAt,
-            dreamTitle: "\(base.dreamTitle) (V2 原生版)",
-            dreamSummary: base.dreamSummary,
-            moodEmoji: base.moodEmoji,
-            moodLabel: base.moodLabel,
-            sceneTag: base.sceneTag,
-            heroMedia: base.heroMedia,
-            insight: base.insight,
-            aiInsightValue: base.aiInsightValue,
-            keywordCount: base.keywordCount,
-            narrativeTitle: base.narrativeTitle,
-            narrativeBody: base.narrativeBody,
-            originalTitle: base.originalTitle,
-            originalBody: base.originalBody
-        )
-    }
-}
-
-private enum DreamTemplateMode: String, CaseIterable, Identifiable {
-    case list
-    case detail
-
-    var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .list:
-            return "列表模板"
-        case .detail:
-            return "详情结构"
-        }
+    private var templateListItems: [DreamCardSnapshot] {
+        Array(mockItems.prefix(2))
     }
 }
 

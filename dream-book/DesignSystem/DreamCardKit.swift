@@ -189,10 +189,8 @@ enum DreamCardLayout {
         summaryPanelMinHeight - summaryCardTopPadding + timelineSummaryBottomBreathing
     }
 
-    // ---- 详情模板（Page Sheet）----
-    static let detailSheetDetentFraction: CGFloat = 0.94
+    // ---- 详情模板 ----
     static let detailContentInsets: EdgeInsets = DreamLayoutInsets.sheetContent
-    static let detailSheetTopPadding: CGFloat = DreamLayoutInsets.sheetContent.top
     static let detailSectionSpacing: CGFloat = DreamLayoutRhythm.majorBlockGap
     static let detailSectionInnerSpacing: CGFloat = DreamLayoutRhythm.groupGap
     static let detailDividerTopPadding: CGFloat = DreamLayoutRhythm.dividerTopGap
@@ -223,7 +221,6 @@ enum DreamCardLayout {
     static let detailActionBarMoreSize: CGFloat = 52
     static let detailActionBarIconSize: CGFloat = 20
     static let detailActionBarSpacing: CGFloat = 10
-    static let detailActionBarPlateCornerRadius: CGFloat = 26
     static let detailActionBarPlateHorizontalPadding: CGFloat = 10
     static let detailActionBarPlateVerticalPadding: CGFloat = 8
     static let detailActionBarPlateBottomPadding: CGFloat = 6
@@ -231,12 +228,8 @@ enum DreamCardLayout {
     static let detailActionBarBackdropHorizontalInset: CGFloat = 0
     static let detailActionBarBackdropTopStrokeOpacity: Double = 0.28
     static let detailActionBarBackdropTintOpacity: Double = 0.08
-    static let detailActionBarBottomSafeAreaOverlap: CGFloat = 8
     static let detailActionBarPlateStrokeOpacity: Double = 0.56
     static let detailActionBarContentClearance: CGFloat = 0
-
-    static let sheetCornerRadius: CGFloat = 24
-    static let sheetDetentFraction: CGFloat = detailSheetDetentFraction
 }
 
 // ============================================================

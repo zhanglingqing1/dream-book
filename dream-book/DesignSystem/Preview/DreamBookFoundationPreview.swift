@@ -16,7 +16,6 @@ import SwiftUI
 
 struct DreamBookFoundationPreview: View {
     @EnvironmentObject private var themeStore: ThemeStore
-    @State private var isPureSheetTestPresented = false
 
     private let colorSpecs: [FoundationColorSpec] = [
         .init(name: "[背景] canvas", color: DreamColor.canvas),
@@ -44,9 +43,6 @@ struct DreamBookFoundationPreview: View {
                     SurfacePrimitiveSection()
                     NavigationSystemSection()
                     PageTemplateSection()
-                    Button("纯净 Sheet 测试") {
-                        isPureSheetTestPresented = true
-                    }
                 }
                 .padding(.horizontal, DreamSpacing.l)
                 .padding(.top, DreamSpacing.s)
@@ -79,11 +75,6 @@ struct DreamBookFoundationPreview: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("切换亮暗主题")
             }
-        }
-        .sheet(isPresented: $isPureSheetTestPresented) {
-            Text("我是原生纯净弹窗")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.blue)
         }
     }
 }
@@ -278,7 +269,7 @@ private struct PageTemplateSection: View {
                         Text("梦境卡片列表与详情")
                             .dreamRole(.bodyStrong)
                             .foregroundColor(DreamColor.textPrimary)
-                        Text("Page Sheet 交互模板")
+                        Text("原生 Sheet 交互模板")
                             .dreamRole(.caption)
                             .foregroundColor(DreamColor.textSecondary)
                     }

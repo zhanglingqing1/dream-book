@@ -7,7 +7,7 @@
 
 /**
  * [INPUT]: 依赖 SwiftUI 布局与交互能力，依赖 DreamBookFoundation 的视觉令牌与 DreamCardKit 的数据契约
- * [OUTPUT]: 对外提供梦境卡片列表/详情的核心组件（Hero 叠层、时间轴列表、Page Sheet 详情 V1/V2 与底部操作条）
+ * [OUTPUT]: 对外提供梦境卡片列表/详情的核心组件（Hero 叠层、时间轴列表、Page Sheet 详情与底部操作条）
  * [POS]: DesignSystem/ 的梦境卡片组件层，承接页面模板并为后续业务页复用提供稳定接口
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
@@ -372,59 +372,6 @@ struct DreamCardDetailSheetView: View {
     let onMore: () -> Void
 
     var body: some View {
-        ZStack {
-            DreamDetailActionBarBottomSafeAreaFill()
-
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: DreamCardLayout.detailSectionSpacing) {
-                    DreamDetailHeroHeader(item: item, onClose: handleClose)
-
-                    DreamDetailMetaSection(item: item)
-
-                    DreamDetailTextSection(
-                        title: item.narrativeTitle,
-                        content: item.displayNarrativeBody
-                    )
-
-                    DreamDetailOriginalSection(item: item)
-                }
-                .padding(.horizontal, DreamCardLayout.detailContentInsets.leading)
-                .padding(.top, DreamCardLayout.detailContentInsets.top)
-                .padding(.bottom, DreamCardLayout.detailActionBarContentClearance)
-            }
-            .accessibilityIdentifier("dream.detail.sheet")
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                DreamDetailActionBarPlate {
-                    DreamDetailActionBar(
-                        onShare: onShare,
-                        onDeepAnalyze: onDeepAnalyze,
-                        onMore: onMore
-                    )
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(alignment: .bottom) {
-            // ---- 分离测试：临时改透明，观察系统 presentationBackground(.red) 的真实覆盖范围 ----
-            Color.clear
-                .ignoresSafeArea(.all, edges: .bottom)
-        }
-        .ignoresSafeArea(.all, edges: .bottom)
-    }
-
-    private func handleClose() {
-        onClose()
-    }
-}
-
-struct DreamCardDetailSheetView_V2: View {
-    let item: DreamCardSnapshot
-    let onClose: () -> Void
-    let onShare: () -> Void
-    let onDeepAnalyze: () -> Void
-    let onMore: () -> Void
-
-    var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: DreamCardLayout.detailSectionSpacing) {
                 DreamDetailHeroHeader(item: item, onClose: handleClose)
@@ -442,7 +389,7 @@ struct DreamCardDetailSheetView_V2: View {
             .padding(.top, DreamCardLayout.detailContentInsets.top)
             .padding(.bottom, DreamCardLayout.detailActionBarContentClearance)
         }
-        .accessibilityIdentifier("dream.detail.sheet.v2")
+        .accessibilityIdentifier("dream.detail.sheet")
         .safeAreaInset(edge: .bottom, spacing: 0) {
             DreamDetailActionBarPlate {
                 DreamDetailActionBar(
@@ -456,28 +403,6 @@ struct DreamCardDetailSheetView_V2: View {
 
     private func handleClose() {
         onClose()
-    }
-}
-
-private struct DreamDetailActionBarBottomSafeAreaFill: View {
-    var body: some View {
-        GeometryReader { proxy in
-            let fillHeight = proxy.safeAreaInsets.bottom + DreamCardLayout.detailActionBarBottomSafeAreaOverlap
-
-            if fillHeight > 0 {
-                Rectangle()
-                    .fill(.ultraThinMaterial)
-                    .overlay {
-                        DreamColor.canvas.opacity(DreamCardLayout.detailActionBarBackdropTintOpacity)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: fillHeight)
-                    .frame(maxHeight: .infinity, alignment: .bottom)
-                    .ignoresSafeArea(edges: .bottom)
-            }
-        }
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
     }
 }
 
