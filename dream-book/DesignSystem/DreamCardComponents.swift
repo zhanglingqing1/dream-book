@@ -51,15 +51,7 @@ private struct DreamTimelineCardRow: View {
                     .padding(.top, DreamCardLayout.timelineTopPadding)
 
                 VStack(alignment: .leading, spacing: 0) {
-                    ZStack(alignment: .topLeading) {
-                        DreamCardHeroStackView(item: item)
-                            .frame(height: DreamCardLayout.heroHeight)
-
-                        DreamSummaryPanel(item: item)
-                            .offset(y: DreamCardLayout.heroHeight - DreamCardLayout.summaryCardTopPadding)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: DreamCardLayout.heroHeight + DreamCardLayout.timelineSummaryRevealHeight)
+                    DreamTimelineCardStage(item: item)
 
                     // ---- 时间标签：卡片外部下方独立呈现 ----
                     Text(DreamCardFormatters.clockTime(from: item.recordedAt))
@@ -68,10 +60,51 @@ private struct DreamTimelineCardRow: View {
                         .padding(.top, DreamCardLayout.summaryTimeTopPadding)
                 }
             }
+            .overlay(
+                Rectangle()
+                    .stroke(Color.red, lineWidth: 2)
+            )
             .contentShape(Rectangle())
+            .padding(.bottom, DreamCardLayout.timelineDebugRowBottomMargin)
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("dream.list.row.\(index)")
+    }
+}
+
+private struct DreamTimelineCardStage: View {
+    let item: DreamCardSnapshot
+
+    var body: some View {
+        GeometryReader { proxy in
+            let stageWidth = proxy.size.width
+            let ticketWidth = stageWidth * DreamCardLayout.timelineFloatingInsightWidthRatio
+
+            ZStack(alignment: .topLeading) {
+                DreamHeroMediaCard(media: item.heroMedia)
+                    .frame(width: DreamCardLayout.heroImageWidth, height: DreamCardLayout.heroImageHeight)
+                    .rotationEffect(.degrees(DreamCardLayout.heroImageRotation))
+                    .offset(y: DreamCardLayout.heroImageOffsetY)
+                    .zIndex(0)
+
+                DreamSummaryPanel(item: item)
+                    .offset(y: DreamCardLayout.heroHeight - DreamCardLayout.summaryCardTopPadding)
+                    .zIndex(1)
+
+                DreamInsightOverlayCard(insight: item.insight)
+                    .frame(width: ticketWidth)
+                    .rotationEffect(.degrees(DreamCardLayout.insightCardRotation))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                    .offset(
+                        x: -DreamCardLayout.timelineFloatingInsightTrailingInset,
+                        y: DreamCardLayout.insightCardOffsetY + DreamCardLayout.timelineFloatingInsightDropY
+                    )
+                    .dreamFloatingShadow()
+                    .zIndex(2)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: DreamCardLayout.timelineStageHeight)
     }
 }
 
@@ -130,10 +163,15 @@ private struct DreamSummaryPanel: View {
                     .lineLimit(1)
             }
         }
+        .padding(.top, DreamCardLayout.summaryPanelOverlayClearance)
         .frame(minHeight: DreamCardLayout.summaryPanelMinHeight, alignment: .topLeading)
         .padding(DreamCardLayout.summaryPanelInsets)
         .background(DreamSurfaceCard(radius: DreamCornerRadius.lg, fill: DreamColor.cardStrong))
         .dreamCardShadow()
+        .overlay(
+            RoundedRectangle(cornerRadius: DreamCornerRadius.lg, style: .continuous)
+                .stroke(Color.blue, lineWidth: 2)
+        )
     }
 }
 
@@ -283,23 +321,27 @@ struct DreamInsightOverlayCard: View {
     let insight: DreamCardInsight
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DreamSpacing.s) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(insight.title)
-                .dreamRole(.bodyStrong)
-                .foregroundColor(DreamColor.textPrimary)
+                .font(.system(size: 22, weight: .heavy, design: .serif))
+                .tracking(0.3)
+                .foregroundColor(ticketInk)
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
 
             Rectangle()
-                .fill(DreamColor.textSecondary.opacity(0.76))
-                .frame(height: 1)
+                .fill(ticketRuleStrong)
+                .frame(height: 2.5)
 
             Text(insight.subtitle)
-                .dreamRole(.body)
-                .foregroundColor(DreamColor.textSecondary)
+                .font(.system(size: 14, weight: .regular, design: .serif))
+                .foregroundColor(ticketInk.opacity(0.76))
+                .lineLimit(1)
 
             HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.s) {
                 Text(insight.primary.label)
-                    .dreamRole(.bodyStrong)
-                    .foregroundColor(DreamColor.textPrimary)
+                    .font(.system(size: 17, weight: .bold, design: .serif))
+                    .foregroundColor(ticketInk)
 
                 Spacer(minLength: DreamSpacing.s)
 
@@ -307,14 +349,14 @@ struct DreamInsightOverlayCard: View {
             }
 
             Rectangle()
-                .fill(DreamColor.textSecondary.opacity(0.76))
-                .frame(height: 1)
+                .fill(ticketRuleStrong)
+                .frame(height: 2.5)
 
             ForEach(Array(insight.normalizedSecondary.enumerated()), id: \.element.id) { index, metric in
                 HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.s) {
                     Text(metric.label)
-                        .dreamRole(.bodyStrong)
-                        .foregroundColor(DreamColor.textPrimary)
+                        .font(.system(size: 14, weight: .bold, design: .serif))
+                        .foregroundColor(ticketInk)
 
                     Spacer(minLength: DreamSpacing.s)
 
@@ -322,22 +364,44 @@ struct DreamInsightOverlayCard: View {
                 }
 
                 if index < insight.normalizedSecondary.count - 1 {
-                    Divider()
-                        .overlay(DreamColor.stroke.opacity(0.68))
+                    Rectangle()
+                        .fill(ticketRuleSoft)
+                        .frame(height: 1.2)
                 }
             }
         }
-        .padding(.horizontal, DreamSpacing.m)
-        .padding(.vertical, DreamSpacing.s)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: DreamCornerRadius.md, style: .continuous)
                 .fill(DreamColor.cardStrong)
         )
         .overlay(
             RoundedRectangle(cornerRadius: DreamCornerRadius.md, style: .continuous)
-                .stroke(DreamColor.textSecondary.opacity(0.56), lineWidth: DreamStroke.regular)
+                .stroke(ticketInk.opacity(0.62), lineWidth: 1.4)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: DreamCornerRadius.md - 3, style: .continuous)
+                .inset(by: 2)
+                .stroke(ticketInk.opacity(0.24), lineWidth: 0.8)
         )
         .dreamCardShadow()
+        .overlay(
+            RoundedRectangle(cornerRadius: DreamCornerRadius.md, style: .continuous)
+                .stroke(Color.green, lineWidth: 2)
+        )
+    }
+
+    private var ticketInk: Color {
+        DreamColor.textPrimary.opacity(0.90)
+    }
+
+    private var ticketRuleStrong: Color {
+        DreamColor.textPrimary.opacity(0.70)
+    }
+
+    private var ticketRuleSoft: Color {
+        DreamColor.textPrimary.opacity(0.42)
     }
 }
 
@@ -348,15 +412,54 @@ private struct DreamMetricValueView: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 2) {
             Text(metric.value)
-                .dreamRole(role)
-                .foregroundColor(DreamColor.textPrimary)
+                .font(valueFont)
+                .tracking(valueTracking)
+                .foregroundColor(valueColor)
+                .lineLimit(1)
+                .minimumScaleFactor(0.86)
 
             if !metric.unit.isEmpty {
                 Text(metric.unit)
-                    .dreamRole(.caption)
-                    .foregroundColor(DreamColor.textSecondary)
+                    .font(unitFont)
+                    .tracking(0.1)
+                    .foregroundColor(unitColor)
+                    .lineLimit(1)
             }
         }
+    }
+
+    private var valueFont: Font {
+        switch role {
+        case .metric:
+            return .system(size: 31, weight: .black, design: .serif)
+        case .bodyStrong:
+            return .system(size: 15, weight: .heavy, design: .serif)
+        default:
+            return role.style.font
+        }
+    }
+
+    private var unitFont: Font {
+        switch role {
+        case .metric:
+            return .system(size: 11, weight: .semibold, design: .serif)
+        case .bodyStrong:
+            return .system(size: 10, weight: .semibold, design: .serif)
+        default:
+            return DreamTextRole.caption.style.font
+        }
+    }
+
+    private var valueTracking: CGFloat {
+        role == .metric ? -0.45 : -0.1
+    }
+
+    private var valueColor: Color {
+        DreamColor.textPrimary.opacity(role == .metric ? 0.92 : 0.88)
+    }
+
+    private var unitColor: Color {
+        DreamColor.textPrimary.opacity(role == .metric ? 0.66 : 0.60)
     }
 }
 

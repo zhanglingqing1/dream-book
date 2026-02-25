@@ -159,6 +159,7 @@ enum DreamCardLayout {
     static let timelineRowContentSpacing: CGFloat = DreamLayoutRhythm.groupGap
     static let timelineColumnWidth: CGFloat = 74
     static let timelineTopPadding: CGFloat = 14
+    static let timelineDebugRowBottomMargin: CGFloat = 40
 
     static let heroHeight: CGFloat = 224
     static let heroImageWidth: CGFloat = 196
@@ -170,10 +171,14 @@ enum DreamCardLayout {
     static let insightCardRotation: Double = 4.5
     static let insightCardOffsetX: CGFloat = 50
     static let insightCardOffsetY: CGFloat = 6
+    static let timelineFloatingInsightDropY: CGFloat = 34
+    static let timelineFloatingInsightTrailingInset: CGFloat = 2
+    static let timelineFloatingInsightWidthRatio: CGFloat = 0.84
 
     static let timelineSummaryBottomBreathing: CGFloat = DreamLayoutRhythm.groupGap
-    static let summaryCardTopPadding: CGFloat = 28
-    static let summaryPanelMinHeight: CGFloat = 150
+    static let summaryCardTopPadding: CGFloat = 72
+    static let summaryPanelOverlayClearance: CGFloat = 120
+    static let summaryPanelMinHeight: CGFloat = 260
     static let summaryBodyLineLimit: Int = 4
     static let summaryTitleLineLimit: Int = 2
     static let summaryPanelInsets: EdgeInsets = DreamLayoutInsets.card
@@ -185,8 +190,16 @@ enum DreamCardLayout {
     static let summaryTagPillVerticalPadding: CGFloat = 6
     static let summaryTagPillHorizontalPadding: CGFloat = DreamSpacing.s
 
+    static var summaryPanelRenderedMinHeight: CGFloat {
+        summaryPanelMinHeight + summaryPanelInsets.top + summaryPanelInsets.bottom
+    }
+
     static var timelineSummaryRevealHeight: CGFloat {
-        summaryPanelMinHeight - summaryCardTopPadding + timelineSummaryBottomBreathing
+        summaryPanelRenderedMinHeight - summaryCardTopPadding + timelineSummaryBottomBreathing
+    }
+
+    static var timelineStageHeight: CGFloat {
+        heroHeight + timelineSummaryRevealHeight
     }
 
     // ---- 详情模板 ----
