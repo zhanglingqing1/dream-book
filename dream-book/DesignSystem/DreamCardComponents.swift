@@ -85,18 +85,21 @@ private struct DreamTimelineCardStage: View {
             let clampedSwipeProgress = max(-1, min(1, swipeTranslation / (stageWidth * 0.45)))
             let mediaIsTop = hasMedia && topLayer == .media
             let insightIsTop = !hasMedia || topLayer == .insight
-            let clusterWidth = hasMedia ? DreamCardLayout.timelineHeroClusterWidth : DreamCardLayout.insightCardWidth
-            let clusterOriginX = max(0, (stageWidth - clusterWidth) * 0.5) + DreamCardLayout.timelineHeroClusterCenterBiasX
-            let mediaBaseOffsetX = clusterOriginX + DreamCardLayout.timelineHeroMediaLeading
-            let insightBaseOffsetX = hasMedia
-                ? clusterOriginX + DreamCardLayout.timelineHeroInsightLeading
-                : max(0, (stageWidth - DreamCardLayout.insightCardWidth) * 0.5) + DreamCardLayout.timelineHeroClusterCenterBiasX
+            // ---- 中线驱动定位：先对齐整行屏幕中点，再映射到 Hero 合并簇 ----
+            let stageCenterX = stageWidth * 0.5
+            let clusterCenterX = stageCenterX + DreamCardLayout.timelineHeroStageToScreenCenterCorrectionX
+            let mediaBaseOffsetX = clusterCenterX
+                + DreamCardLayout.timelineHeroMediaCenterOffsetX
+                - (DreamCardLayout.heroImageWidth * 0.5)
+            let insightBaseOffsetX = clusterCenterX
+                + (hasMedia ? DreamCardLayout.timelineHeroInsightCenterOffsetX : 0)
+                - (DreamCardLayout.insightCardWidth * 0.5)
             let insightBaseOffsetY = hasMedia
                 ? DreamCardLayout.insightCardOffsetY + DreamCardLayout.timelineFloatingInsightDropY
                 : DreamCardLayout.insightCardOffsetY + DreamCardLayout.timelineFloatingInsightDropYNoMedia
             let mediaDepthOffsetX = mediaIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetX
             let mediaDepthOffsetY = mediaIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetY
-            let insightDepthOffsetX = insightIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetX
+            let insightDepthOffsetX = insightIsTop ? 0 : -DreamCardLayout.timelineLayerDepthOffsetX
             let insightDepthOffsetY = insightIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetY
             let mediaParallaxX = clampedSwipeProgress * DreamCardLayout.timelineLayerParallaxRange * (mediaIsTop ? 0.85 : 0.5)
             let insightParallaxX = clampedSwipeProgress * DreamCardLayout.timelineLayerParallaxRange * (insightIsTop ? -0.75 : -0.45)
@@ -220,26 +223,20 @@ private struct DreamSummaryPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DreamCardLayout.summaryPanelGroupSpacing) {
-            // ---- 标题独占一行 ----
+            // ---- 标题区：按用户输入原文展示，不做拼接干预 ----
             Text(item.dreamTitle)
                 .dreamRole(.navTitle)
                 .foregroundColor(DreamColor.textPrimary)
                 .lineLimit(DreamCardLayout.summaryTitleLineLimit)
 
-            // ---- 正文区：emoji + 摘要 ----
-            HStack(alignment: .top, spacing: DreamCardLayout.summaryPanelTightSpacing) {
-                Text(item.moodEmoji)
-                    .font(.system(size: 18))
-                    .padding(.top, 2)
-
-                Text(item.displaySummary)
-                    .font(.system(size: 15, weight: .regular, design: .serif))
-                    .tracking(0.05)
-                    .foregroundColor(DreamColor.textSecondary.opacity(0.88))
-                    .lineLimit(DreamCardLayout.summaryBodyLineLimit)
-                    .lineSpacing(DreamCardLayout.summaryBodyLineSpacing)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            // ---- 正文区：按用户输入原文展示，不注入 emoji 或回退文案 ----
+            Text(item.dreamSummary)
+                .font(.system(size: 15, weight: .regular, design: .serif))
+                .tracking(0.05)
+                .foregroundColor(DreamColor.textSecondary.opacity(0.88))
+                .lineLimit(DreamCardLayout.summaryBodyLineLimit)
+                .lineSpacing(DreamCardLayout.summaryBodyLineSpacing)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.top, DreamCardLayout.summaryPanelOverlayClearance)
         .frame(minHeight: DreamCardLayout.summaryPanelMinHeight, alignment: .topLeading)

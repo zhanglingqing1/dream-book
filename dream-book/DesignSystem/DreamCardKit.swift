@@ -194,10 +194,20 @@ enum DreamCardLayout {
     static let insightCardOffsetY: CGFloat = 4
     static let timelineFloatingInsightDropY: CGFloat = 20
     static let timelineFloatingInsightDropYNoMedia: CGFloat = 12
+
+    // ---- Hero 合并组件几何：图片卡 + 分析卡视作同一簇，以屏幕中线为锚 ----
     static let timelineHeroClusterWidth: CGFloat = 252
-    static let timelineHeroClusterCenterBiasX: CGFloat = -10
     static let timelineHeroMediaLeading: CGFloat = 0
     static let timelineHeroInsightLeading: CGFloat = 78
+    static var timelineHeroMediaCenterOffsetX: CGFloat {
+        timelineHeroMediaLeading + (heroImageWidth * 0.5) - (timelineHeroClusterWidth * 0.5)
+    }
+    static var timelineHeroInsightCenterOffsetX: CGFloat {
+        timelineHeroInsightLeading + (insightCardWidth * 0.5) - (timelineHeroClusterWidth * 0.5)
+    }
+    static var timelineHeroStageToScreenCenterCorrectionX: CGFloat {
+        (listContentInsets.trailing - listContentInsets.leading - timelineColumnWidth - timelineRowContentSpacing) * 0.5
+    }
     static let timelineLayerSwitchSwipeThreshold: CGFloat = 26
     static let timelineLayerBackScale: CGFloat = 0.954
     static let timelineLayerBackOpacity: Double = 0.94
@@ -217,7 +227,6 @@ enum DreamCardLayout {
     static let summaryPanelInsets: EdgeInsets = EdgeInsets(top: 24, leading: 24, bottom: 22, trailing: 24)
     static let summaryPanelGroupSpacing: CGFloat = 14
     static let summaryPanelRowSpacing: CGFloat = DreamLayoutRhythm.rowGap
-    static let summaryPanelTightSpacing: CGFloat = 10
     static let summaryTimeTopPadding: CGFloat = DreamLayoutRhythm.tightGap
 
     static var summaryPanelRenderedMinHeight: CGFloat {

@@ -52,7 +52,7 @@ private enum DreamCardMockData {
         DreamCardSnapshot(
             recordedAt: makeDate(day: 14, month: 12, year: 2025, hour: 11, minute: 21),
             dreamTitle: "海边列车",
-            dreamSummary: "我坐在一辆穿过海浪的列车里，窗外的路牌都写着遗忘的名字。",
+            dreamSummary: "我梦见自己坐在一节快要散架的老列车里，车窗半开，咸湿的风和海浪一起灌进来，脚边全是潮水。我一路盯着站牌看，每一站都写着我认识却想不起的人名，列车没有广播也没有终点提示，只有铁轨和浪声叠在一起。最奇怪的是我一直很清醒，知道自己在离开什么，却怎么都说不出那个东西的名字。",
             moodEmoji: "🌊",
             moodLabel: "平静",
             sceneTag: "旅程",
@@ -72,12 +72,12 @@ private enum DreamCardMockData {
             narrativeTitle: "潮声中的告别：你的内在过渡",
             narrativeBody: "列车代表你正在离开旧叙事，海浪象征情绪仍在波动。梦里你持续向前，说明你并未被过去困住，而是在寻找新的秩序。",
             originalTitle: "原始梦境",
-            originalBody: "我在海边的列车上，车厢很旧但很安静。窗外一直有浪拍过来，路牌看不清，只记得自己没有害怕。"
+            originalBody: "我在海边的列车上醒着做梦，车厢是木头椅子，灯忽明忽暗，像随时会停电。轨道直接贴着海面走，浪会拍到窗框。每次我想下车，门就会变成镜子，照出我小时候的样子。后来我走到车厢连接处，看到前一节车厢空无一人，只贴着一张写着“下一站：遗忘”的纸。我没有害怕，只是一直在默记站名，怕醒来后它们全都不见。"
         ),
         DreamCardSnapshot(
             recordedAt: makeDate(day: 6, month: 12, year: 2025, hour: 2, minute: 38),
             dreamTitle: "玻璃花园",
-            dreamSummary: "我在一座玻璃做的温室里修补一只会发光的鸟，手上一直有碎片。",
+            dreamSummary: "我梦见自己一个人在玻璃温室里修一只会发光的小鸟，它的翅膀像碎掉的灯泡，一碰就往下掉渣。我蹲在地上一片片把碎片拼回去，手被割出很多细口子，但怎么都停不下来。温室外面有人影来回走，我听得见脚步，却一直看不清他们的脸。",
             moodEmoji: "🕊️",
             moodLabel: "紧张",
             sceneTag: "修复",
@@ -97,7 +97,7 @@ private enum DreamCardMockData {
             narrativeTitle: "修复与代价：你正在学会边界",
             narrativeBody: "玻璃与伤口反复出现，代表你正处理脆弱关系。发光的鸟是你想保护的价值，梦境提醒你在承担责任时也要保护自己。",
             originalTitle: "原始梦境",
-            originalBody: "温室里全是玻璃植物，我想把一只受伤的鸟缝好。每次碰它手都会被割到，但我没有停。"
+            originalBody: "温室里的植物全是玻璃做的，风一吹就像在互相碰杯。我把那只鸟放在工作台上，用线缝它翅膀边缘，每缝一针它就亮一点，也更烫一点。后来我发现桌上的玻璃碎片其实是我自己指尖掉下来的壳，越修手越轻，像要变透明。最后门开了，我想把鸟递出去，但外面的人全都背对着我。"
         ),
         DreamCardSnapshot(
             recordedAt: makeDate(day: 1, month: 12, year: 2025, hour: 7, minute: 5),
