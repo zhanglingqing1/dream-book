@@ -157,9 +157,13 @@ enum DreamCardLayout {
     static let listContentInsets: EdgeInsets = DreamLayoutInsets.page
     static let timelineRowSpacing: CGFloat = DreamLayoutRhythm.pageSectionGap
     static let timelineRowContentSpacing: CGFloat = DreamLayoutRhythm.groupGap
-    static let timelineColumnWidth: CGFloat = 74
-    static let timelineTopPadding: CGFloat = 14
+    static let timelineColumnWidth: CGFloat = 62
+    static let timelineTopPadding: CGFloat = 10
     static let timelineDebugRowBottomMargin: CGFloat = 40
+    static let timelineDatePairSpacing: CGFloat = 3
+    static let timelineDayFontSize: CGFloat = 28
+    static let timelineMonthFontSize: CGFloat = 13
+    static let timelineMonthBaselineOffset: CGFloat = 8
 
     static let heroHeight: CGFloat = 224
     static let heroImageWidth: CGFloat = 196
@@ -167,28 +171,26 @@ enum DreamCardLayout {
     static let heroImageRotation: Double = -4
     static let heroImageOffsetY: CGFloat = 16
 
-    static let insightCardWidth: CGFloat = 208
+    static let insightCardWidth: CGFloat = 188
     static let insightCardRotation: Double = 4.5
-    static let insightCardOffsetX: CGFloat = 50
-    static let insightCardOffsetY: CGFloat = 6
-    static let timelineFloatingInsightDropY: CGFloat = 34
-    static let timelineFloatingInsightTrailingInset: CGFloat = 2
-    static let timelineFloatingInsightWidthRatio: CGFloat = 0.84
+    static let insightCardOffsetX: CGFloat = 44
+    static let insightCardOffsetY: CGFloat = 4
+    static let timelineFloatingInsightDropY: CGFloat = 28
+    static let timelineFloatingInsightTrailingInset: CGFloat = 8
+    static let timelineFloatingInsightWidthRatio: CGFloat = 0.68
 
     static let timelineSummaryBottomBreathing: CGFloat = DreamLayoutRhythm.groupGap
     static let summaryCardTopPadding: CGFloat = 72
-    static let summaryPanelOverlayClearance: CGFloat = 120
-    static let summaryPanelMinHeight: CGFloat = 260
+    static let summaryPanelOverlayClearance: CGFloat = 116
+    static let summaryPanelMinHeight: CGFloat = 224
     static let summaryBodyLineLimit: Int = 4
     static let summaryTitleLineLimit: Int = 2
-    static let summaryPanelInsets: EdgeInsets = DreamLayoutInsets.card
-    static let summaryPanelPillInsets: EdgeInsets = DreamLayoutInsets.pill
-    static let summaryPanelGroupSpacing: CGFloat = DreamLayoutRhythm.groupGap
+    static let summaryBodyLineSpacing: CGFloat = 6
+    static let summaryPanelInsets: EdgeInsets = EdgeInsets(top: 24, leading: 24, bottom: 22, trailing: 24)
+    static let summaryPanelGroupSpacing: CGFloat = 14
     static let summaryPanelRowSpacing: CGFloat = DreamLayoutRhythm.rowGap
-    static let summaryPanelTightSpacing: CGFloat = DreamLayoutRhythm.tightGap
+    static let summaryPanelTightSpacing: CGFloat = 10
     static let summaryTimeTopPadding: CGFloat = DreamLayoutRhythm.tightGap
-    static let summaryTagPillVerticalPadding: CGFloat = 6
-    static let summaryTagPillHorizontalPadding: CGFloat = DreamSpacing.s
 
     static var summaryPanelRenderedMinHeight: CGFloat {
         summaryPanelMinHeight + summaryPanelInsets.top + summaryPanelInsets.bottom
@@ -221,10 +223,10 @@ enum DreamCardLayout {
     static let detailHeroImageRotation: Double = -3.6
     static let detailHeroImageOffsetY: CGFloat = 14
 
-    static let detailInsightCardWidth: CGFloat = 184
+    static let detailInsightCardWidth: CGFloat = 168
     static let detailInsightCardRotation: Double = 4.0
-    static let detailInsightCardOffsetX: CGFloat = 42
-    static let detailInsightCardOffsetY: CGFloat = 5
+    static let detailInsightCardOffsetX: CGFloat = 34
+    static let detailInsightCardOffsetY: CGFloat = 4
 
     static let detailCloseButtonSize: CGFloat = 44
     static let detailCloseButtonInset: CGFloat = 8

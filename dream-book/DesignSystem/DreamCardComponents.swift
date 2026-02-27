@@ -60,10 +60,6 @@ private struct DreamTimelineCardRow: View {
                         .padding(.top, DreamCardLayout.summaryTimeTopPadding)
                 }
             }
-            .overlay(
-                Rectangle()
-                    .stroke(Color.red, lineWidth: 2)
-            )
             .contentShape(Rectangle())
             .padding(.bottom, DreamCardLayout.timelineDebugRowBottomMargin)
         }
@@ -112,17 +108,22 @@ private struct DreamTimelineDateColumn: View {
     let date: Date
 
     var body: some View {
-        // ---- 日号 + 月号下标：水平基线对齐 ----
-        HStack(alignment: .lastTextBaseline, spacing: 2) {
+        // ---- 日号 + 月号上标：减重并形成更精致的主次错落 ----
+        HStack(alignment: .lastTextBaseline, spacing: DreamCardLayout.timelineDatePairSpacing) {
             Text(DreamCardFormatters.dayNumber(from: date))
-                .dreamRole(.metric)
+                .font(.system(size: DreamCardLayout.timelineDayFontSize, weight: .medium, design: .default))
+                .tracking(-0.2)
+                .monospacedDigit()
                 .foregroundColor(DreamColor.textPrimary)
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .minimumScaleFactor(0.86)
 
             Text(DreamCardFormatters.monthNumber(from: date))
-                .dreamRole(.caption)
+                .font(.system(size: DreamCardLayout.timelineMonthFontSize, weight: .regular, design: .default))
+                .tracking(0.1)
+                .baselineOffset(DreamCardLayout.timelineMonthBaselineOffset)
                 .foregroundColor(DreamColor.textSecondary)
+                .lineLimit(1)
         }
     }
 }
@@ -138,29 +139,19 @@ private struct DreamSummaryPanel: View {
                 .foregroundColor(DreamColor.textPrimary)
                 .lineLimit(DreamCardLayout.summaryTitleLineLimit)
 
-            // ---- 正文区：emoji + 摘要 + 标签 pill ----
+            // ---- 正文区：emoji + 摘要 ----
             HStack(alignment: .top, spacing: DreamCardLayout.summaryPanelTightSpacing) {
                 Text(item.moodEmoji)
-                    .font(.system(size: 20))
-                    .padding(.top, 1)
+                    .font(.system(size: 18))
+                    .padding(.top, 2)
 
                 Text(item.displaySummary)
-                    .dreamRole(.body)
-                    .foregroundColor(DreamColor.textSecondary)
+                    .font(.system(size: 15, weight: .regular, design: .serif))
+                    .tracking(0.05)
+                    .foregroundColor(DreamColor.textSecondary.opacity(0.88))
                     .lineLimit(DreamCardLayout.summaryBodyLineLimit)
-                    .lineSpacing(3)
+                    .lineSpacing(DreamCardLayout.summaryBodyLineSpacing)
                     .frame(maxWidth: .infinity, alignment: .leading)
-
-                Text(item.sceneTag)
-                    .dreamRole(.caption)
-                    .foregroundColor(DreamColor.textSecondary)
-                    .padding(.vertical, DreamCardLayout.summaryTagPillVerticalPadding)
-                    .padding(.horizontal, DreamCardLayout.summaryTagPillHorizontalPadding)
-                    .background(
-                        Capsule(style: .continuous)
-                            .fill(DreamColor.surface)
-                    )
-                    .lineLimit(1)
             }
         }
         .padding(.top, DreamCardLayout.summaryPanelOverlayClearance)
@@ -168,10 +159,6 @@ private struct DreamSummaryPanel: View {
         .padding(DreamCardLayout.summaryPanelInsets)
         .background(DreamSurfaceCard(radius: DreamCornerRadius.lg, fill: DreamColor.cardStrong))
         .dreamCardShadow()
-        .overlay(
-            RoundedRectangle(cornerRadius: DreamCornerRadius.lg, style: .continuous)
-                .stroke(Color.blue, lineWidth: 2)
-        )
     }
 }
 
@@ -321,26 +308,26 @@ struct DreamInsightOverlayCard: View {
     let insight: DreamCardInsight
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 10) {
             Text(insight.title)
-                .font(.system(size: 22, weight: .heavy, design: .serif))
-                .tracking(0.3)
+                .font(.system(size: 16, weight: .bold, design: .serif))
+                .tracking(0.1)
                 .foregroundColor(ticketInk)
                 .lineLimit(1)
-                .minimumScaleFactor(0.82)
+                .minimumScaleFactor(0.88)
 
             Rectangle()
                 .fill(ticketRuleStrong)
-                .frame(height: 2.5)
+                .frame(height: 2.2)
 
             Text(insight.subtitle)
-                .font(.system(size: 14, weight: .regular, design: .serif))
-                .foregroundColor(ticketInk.opacity(0.76))
+                .font(.system(size: 12, weight: .regular, design: .serif))
+                .foregroundColor(ticketInk.opacity(0.70))
                 .lineLimit(1)
 
-            HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.s) {
+            HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.xs) {
                 Text(insight.primary.label)
-                    .font(.system(size: 17, weight: .bold, design: .serif))
+                    .font(.system(size: 14, weight: .semibold, design: .serif))
                     .foregroundColor(ticketInk)
 
                 Spacer(minLength: DreamSpacing.s)
@@ -350,12 +337,12 @@ struct DreamInsightOverlayCard: View {
 
             Rectangle()
                 .fill(ticketRuleStrong)
-                .frame(height: 2.5)
+                .frame(height: 2.2)
 
             ForEach(Array(insight.normalizedSecondary.enumerated()), id: \.element.id) { index, metric in
-                HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.s) {
+                HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.xs) {
                     Text(metric.label)
-                        .font(.system(size: 14, weight: .bold, design: .serif))
+                        .font(.system(size: 12, weight: .medium, design: .serif))
                         .foregroundColor(ticketInk)
 
                     Spacer(minLength: DreamSpacing.s)
@@ -366,29 +353,24 @@ struct DreamInsightOverlayCard: View {
                 if index < insight.normalizedSecondary.count - 1 {
                     Rectangle()
                         .fill(ticketRuleSoft)
-                        .frame(height: 1.2)
+                        .frame(height: 0.7)
                 }
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
+        .padding(.horizontal, 17)
+        .padding(.vertical, 14)
         .background(
             RoundedRectangle(cornerRadius: DreamCornerRadius.md, style: .continuous)
-                .fill(DreamColor.cardStrong)
+                .fill(DreamColor.paperCard)
         )
         .overlay(
             RoundedRectangle(cornerRadius: DreamCornerRadius.md, style: .continuous)
-                .stroke(ticketInk.opacity(0.62), lineWidth: 1.4)
+                .stroke(DreamColor.paperCardStroke.opacity(0.42), lineWidth: 0.9)
         )
         .overlay(
             RoundedRectangle(cornerRadius: DreamCornerRadius.md - 3, style: .continuous)
                 .inset(by: 2)
-                .stroke(ticketInk.opacity(0.24), lineWidth: 0.8)
-        )
-        .dreamCardShadow()
-        .overlay(
-            RoundedRectangle(cornerRadius: DreamCornerRadius.md, style: .continuous)
-                .stroke(Color.green, lineWidth: 2)
+                .stroke(DreamColor.paperCardInnerStroke.opacity(0.36), lineWidth: 0.6)
         )
     }
 
@@ -397,11 +379,11 @@ struct DreamInsightOverlayCard: View {
     }
 
     private var ticketRuleStrong: Color {
-        DreamColor.textPrimary.opacity(0.70)
+        DreamColor.textPrimary.opacity(0.56)
     }
 
     private var ticketRuleSoft: Color {
-        DreamColor.textPrimary.opacity(0.42)
+        DreamColor.textPrimary.opacity(0.14)
     }
 }
 
@@ -431,9 +413,9 @@ private struct DreamMetricValueView: View {
     private var valueFont: Font {
         switch role {
         case .metric:
-            return .system(size: 31, weight: .black, design: .serif)
+            return .system(size: 24, weight: .bold, design: .serif)
         case .bodyStrong:
-            return .system(size: 15, weight: .heavy, design: .serif)
+            return .system(size: 13, weight: .semibold, design: .serif)
         default:
             return role.style.font
         }
@@ -442,16 +424,16 @@ private struct DreamMetricValueView: View {
     private var unitFont: Font {
         switch role {
         case .metric:
-            return .system(size: 11, weight: .semibold, design: .serif)
+            return .system(size: 10, weight: .medium, design: .serif)
         case .bodyStrong:
-            return .system(size: 10, weight: .semibold, design: .serif)
+            return .system(size: 9, weight: .medium, design: .serif)
         default:
             return DreamTextRole.caption.style.font
         }
     }
 
     private var valueTracking: CGFloat {
-        role == .metric ? -0.45 : -0.1
+        role == .metric ? -0.25 : 0
     }
 
     private var valueColor: Color {

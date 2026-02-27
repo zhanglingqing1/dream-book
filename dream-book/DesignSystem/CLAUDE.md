@@ -24,11 +24,11 @@ Preview/: 设计系统预览页面层与原子组件层。
 4. 出现列表文本区空白过大、详情底部遮挡等问题时，视为系统性版式缺陷，不以局部补丁 closure 作为最终方案。
 
 版式复刻记录（参考截图对齐）
-1. 日期列从 VStack（日上月下）改为 HStack（日号+月号下标），水平基线对齐，timelineColumnWidth 62→74。
-2. Summary Panel：标题独占一行，标签 pill 移至正文区右侧（与 emoji+摘要同行），移除底部"情绪+时间"footer。
-3. 时间标签（clockTime 格式）从卡片内移至卡片外下方独立呈现，summaryTimeTopPadding 控制间距。
-4. summaryPanelMinHeight 186→150，配合 footer 移除后自然收紧卡片高度。
-5. 详情关闭按钮 64→44、图标 24→16，匹配参考截图的精致比例。
+1. 日期列保持 HStack 主结构，并将日号降重降尺（月号上标化）；timelineColumnWidth 74→62，形成更轻盈的时间刻度。
+2. 浮层分析卡片收窄：timelineFloatingInsightWidthRatio 0.84→0.68，detailInsightCardWidth 184→168，释放底层渐变可见面积。
+3. 分析卡片文本体系整体降级：标题/副标题/指标字号全部下调，主指标值 31→24；分隔线改为“主线粗深 + 行线细浅”。
+4. 分析卡片材质改为暖纸色（paperCard），并使用弱外描边 + 更弱内描边，替代高对比纯白硬边。
+5. Summary Panel 正文区移除 sceneTag 胶囊，仅保留 emoji+叙述文本；增大正文行距并弱化颜色，提升段落阅读感。
 
 法则: 成员完整·一行一文件·父级链接·技术词前置
 

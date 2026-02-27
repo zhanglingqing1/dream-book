@@ -25,6 +25,9 @@ enum DreamColor {
     static let surface = Color.theme(light: "#F4F4F2", dark: "#1B1B1A")
     static let card = Color.theme(light: "#F8F8F7", dark: "#242422")
     static let cardStrong = Color.theme(light: "#FFFFFF", dark: "#2B2B29")
+    static let paperCard = Color.theme(light: "#F7F3EB", dark: "#302A24")
+    static let paperCardStroke = Color.theme(light: "#D9D0C1", dark: "#4A4239")
+    static let paperCardInnerStroke = Color.theme(light: "#FEFCF8", dark: "#5A5146")
     static let stroke = Color.theme(light: "#D4D4D2", dark: "#3A3A38")
 
     // ---- 文本层 ----
