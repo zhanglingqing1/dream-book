@@ -75,16 +75,10 @@ private struct DreamTimelineCardStage: View {
     let item: DreamCardSnapshot
     let onSelect: () -> Void
 
-    @State private var topLayer: DreamTimelineTopLayer = .insight
-    @GestureState private var swipeTranslation: CGFloat = 0
-
     var body: some View {
         GeometryReader { proxy in
             let hasMedia = item.hasHeroMedia
             let stageWidth = max(proxy.size.width, 1)
-            let clampedSwipeProgress = max(-1, min(1, swipeTranslation / (stageWidth * 0.45)))
-            let mediaIsTop = hasMedia && topLayer == .media
-            let insightIsTop = !hasMedia || topLayer == .insight
             // ---- 中线驱动定位：先对齐整行屏幕中点，再映射到 Hero 合并簇 ----
             let stageCenterX = stageWidth * 0.5
             let clusterCenterX = stageCenterX + DreamCardLayout.timelineHeroStageToScreenCenterCorrectionX
@@ -95,67 +89,139 @@ private struct DreamTimelineCardStage: View {
                 + (hasMedia ? DreamCardLayout.timelineHeroInsightCenterOffsetX : 0)
                 - (DreamCardLayout.insightCardWidth * 0.5)
             let insightBaseOffsetY = hasMedia
-                ? DreamCardLayout.insightCardOffsetY + DreamCardLayout.timelineFloatingInsightDropY
+                ? DreamCardLayout.insightAlignedOffsetYToHeroMedia
                 : DreamCardLayout.insightCardOffsetY + DreamCardLayout.timelineFloatingInsightDropYNoMedia
-            let mediaDepthOffsetX = mediaIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetX
-            let mediaDepthOffsetY = mediaIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetY
-            let insightDepthOffsetX = insightIsTop ? 0 : -DreamCardLayout.timelineLayerDepthOffsetX
-            let insightDepthOffsetY = insightIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetY
-            let mediaParallaxX = clampedSwipeProgress * DreamCardLayout.timelineLayerParallaxRange * (mediaIsTop ? 0.85 : 0.5)
-            let insightParallaxX = clampedSwipeProgress * DreamCardLayout.timelineLayerParallaxRange * (insightIsTop ? -0.75 : -0.45)
 
-            ZStack(alignment: .topLeading) {
-                if hasMedia {
-                    DreamHeroMediaCard(media: item.heroMedia)
-                        .frame(width: DreamCardLayout.heroImageWidth, height: DreamCardLayout.heroImageHeight)
-                        .rotationEffect(
-                            .degrees(
-                                mediaIsTop
-                                    ? DreamCardLayout.heroImageRotation
-                                    : DreamCardLayout.heroImageRotation - 1.2
-                            )
-                        )
-                        .scaleEffect(mediaIsTop ? 1 : DreamCardLayout.timelineLayerBackScale)
-                        .opacity(mediaIsTop ? 1 : DreamCardLayout.timelineLayerBackOpacity)
-                        .offset(
-                            x: mediaBaseOffsetX + mediaDepthOffsetX + mediaParallaxX,
-                            y: DreamCardLayout.heroImageOffsetY + mediaDepthOffsetY
-                        )
-                        .zIndex(mediaIsTop ? 2.6 : 1.2)
-                        .onTapGesture {
-                            bringToFront(.media)
-                        }
-                }
-
+            DreamInteractiveHeroLayerStack(
+                item: item,
+                stageWidth: stageWidth,
+                mediaFrameWidth: DreamCardLayout.heroImageWidth,
+                mediaFrameHeight: DreamCardLayout.heroImageHeight,
+                mediaRotation: DreamCardLayout.heroImageRotation,
+                mediaBaseOffsetX: mediaBaseOffsetX,
+                mediaBaseOffsetY: DreamCardLayout.heroImageOffsetY,
+                insightFrameWidth: DreamCardLayout.insightCardWidth,
+                insightRotation: DreamCardLayout.insightCardRotation,
+                insightBaseOffsetX: insightBaseOffsetX,
+                insightBaseOffsetY: insightBaseOffsetY
+            ) {
                 DreamSummaryPanel(item: item)
                     .offset(y: DreamCardLayout.heroHeight - DreamCardLayout.summaryCardTopPadding)
-                    .zIndex(0.2)
                     .onTapGesture(perform: onSelect)
-
-                DreamInsightOverlayCard(insight: item.insight)
-                    .frame(width: DreamCardLayout.insightCardWidth)
-                    .rotationEffect(
-                        .degrees(
-                            insightIsTop
-                                ? DreamCardLayout.insightCardRotation
-                                : DreamCardLayout.insightCardRotation - 1.1
-                        )
-                    )
-                    .scaleEffect(insightIsTop ? 1 : DreamCardLayout.timelineLayerBackScale)
-                    .opacity(insightIsTop ? 1 : DreamCardLayout.timelineLayerBackOpacity)
-                    .offset(
-                        x: insightBaseOffsetX + insightDepthOffsetX + insightParallaxX,
-                        y: insightBaseOffsetY + insightDepthOffsetY
-                    )
-                    .dreamFloatingShadow()
-                    .zIndex(insightIsTop ? 2.8 : 1.4)
-                    .onTapGesture {
-                        bringToFront(.insight)
-                    }
             }
         }
         .frame(maxWidth: .infinity)
         .frame(height: DreamCardLayout.timelineStageHeight)
+    }
+}
+
+// ---- Hero 层叠交互单一实现：列表与详情统一复用 ----
+private struct DreamInteractiveHeroLayerStack<Overlay: View>: View {
+    let item: DreamCardSnapshot
+    let stageWidth: CGFloat
+    let mediaFrameWidth: CGFloat
+    let mediaFrameHeight: CGFloat
+    let mediaRotation: Double
+    let mediaBaseOffsetX: CGFloat
+    let mediaBaseOffsetY: CGFloat
+    let insightFrameWidth: CGFloat
+    let insightRotation: Double
+    let insightBaseOffsetX: CGFloat
+    let insightBaseOffsetY: CGFloat
+    let overlay: Overlay
+
+    @State private var topLayer: DreamTimelineTopLayer = .insight
+    @GestureState private var swipeTranslation: CGFloat = 0
+
+    init(
+        item: DreamCardSnapshot,
+        stageWidth: CGFloat,
+        mediaFrameWidth: CGFloat,
+        mediaFrameHeight: CGFloat,
+        mediaRotation: Double,
+        mediaBaseOffsetX: CGFloat,
+        mediaBaseOffsetY: CGFloat,
+        insightFrameWidth: CGFloat,
+        insightRotation: Double,
+        insightBaseOffsetX: CGFloat,
+        insightBaseOffsetY: CGFloat,
+        @ViewBuilder overlay: () -> Overlay
+    ) {
+        self.item = item
+        self.stageWidth = stageWidth
+        self.mediaFrameWidth = mediaFrameWidth
+        self.mediaFrameHeight = mediaFrameHeight
+        self.mediaRotation = mediaRotation
+        self.mediaBaseOffsetX = mediaBaseOffsetX
+        self.mediaBaseOffsetY = mediaBaseOffsetY
+        self.insightFrameWidth = insightFrameWidth
+        self.insightRotation = insightRotation
+        self.insightBaseOffsetX = insightBaseOffsetX
+        self.insightBaseOffsetY = insightBaseOffsetY
+        self.overlay = overlay()
+    }
+
+    var body: some View {
+        let hasMedia = item.hasHeroMedia
+        let clampedStageWidth = max(stageWidth, 1)
+        let clampedSwipeProgress = max(-1, min(1, swipeTranslation / (clampedStageWidth * 0.45)))
+        let mediaIsTop = hasMedia && topLayer == .media
+        let insightIsTop = !hasMedia || topLayer == .insight
+        let mediaDepthOffsetX = mediaIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetX
+        let mediaDepthOffsetY = mediaIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetY
+        let insightDepthOffsetX = insightIsTop ? 0 : -DreamCardLayout.timelineLayerDepthOffsetX
+        let insightDepthOffsetY = insightIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetY
+        let mediaParallaxX = clampedSwipeProgress * DreamCardLayout.timelineLayerParallaxRange * (mediaIsTop ? 0.85 : 0.5)
+        let insightParallaxX = clampedSwipeProgress * DreamCardLayout.timelineLayerParallaxRange * (insightIsTop ? -0.75 : -0.45)
+
+        return ZStack(alignment: .topLeading) {
+            if hasMedia {
+                DreamHeroMediaCard(media: item.heroMedia)
+                    .frame(width: mediaFrameWidth, height: mediaFrameHeight)
+                    .rotationEffect(
+                        .degrees(
+                            mediaIsTop
+                                ? mediaRotation
+                                : mediaRotation - 1.2
+                        )
+                    )
+                    .scaleEffect(mediaIsTop ? 1 : DreamCardLayout.timelineLayerBackScale)
+                    .opacity(mediaIsTop ? 1 : DreamCardLayout.timelineLayerBackOpacity)
+                    .offset(
+                        x: mediaBaseOffsetX + mediaDepthOffsetX + mediaParallaxX,
+                        y: mediaBaseOffsetY + mediaDepthOffsetY
+                    )
+                    .zIndex(mediaIsTop ? 2.6 : 1.2)
+                    .onTapGesture {
+                        bringToFront(.media)
+                    }
+            }
+
+            overlay
+                .zIndex(0.2)
+
+            DreamInsightOverlayCard(insight: item.insight)
+                .frame(width: insightFrameWidth)
+                .rotationEffect(
+                    .degrees(
+                        insightIsTop
+                            ? insightRotation
+                            : insightRotation - 1.1
+                    )
+                )
+                .scaleEffect(insightIsTop ? 1 : DreamCardLayout.timelineLayerBackScale)
+                .opacity(insightIsTop ? 1 : DreamCardLayout.timelineLayerBackOpacity)
+                .offset(
+                    x: insightBaseOffsetX + insightDepthOffsetX + insightParallaxX,
+                    y: insightBaseOffsetY + insightDepthOffsetY
+                )
+                .dreamFloatingShadow()
+                .zIndex(insightIsTop ? 2.8 : 1.4)
+                .onTapGesture {
+                    bringToFront(.insight)
+                }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .simultaneousGesture(
             DragGesture(minimumDistance: 14, coordinateSpace: .local)
                 .updating($swipeTranslation) { value, state, _ in
@@ -254,21 +320,26 @@ struct DreamCardHeroStackView: View {
     let item: DreamCardSnapshot
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            if item.hasHeroMedia {
-                DreamHeroMediaCard(media: item.heroMedia)
-                    .frame(width: DreamCardLayout.heroImageWidth, height: DreamCardLayout.heroImageHeight)
-                    .rotationEffect(.degrees(DreamCardLayout.heroImageRotation))
-                    .offset(y: DreamCardLayout.heroImageOffsetY)
-            }
+        GeometryReader { proxy in
+            let hasMedia = item.hasHeroMedia
+            let stageWidth = max(proxy.size.width, 1)
+            let insightBaseOffsetY = hasMedia ? DreamCardLayout.insightAlignedOffsetYToHeroMedia : DreamCardLayout.insightCardOffsetY
 
-            DreamInsightOverlayCard(insight: item.insight)
-                .frame(width: DreamCardLayout.insightCardWidth)
-                .rotationEffect(.degrees(DreamCardLayout.insightCardRotation))
-                .offset(
-                    x: item.hasHeroMedia ? DreamCardLayout.insightCardOffsetX : DreamSpacing.xs,
-                    y: DreamCardLayout.insightCardOffsetY
-                )
+            DreamInteractiveHeroLayerStack(
+                item: item,
+                stageWidth: stageWidth,
+                mediaFrameWidth: DreamCardLayout.heroImageWidth,
+                mediaFrameHeight: DreamCardLayout.heroImageHeight,
+                mediaRotation: DreamCardLayout.heroImageRotation,
+                mediaBaseOffsetX: 0,
+                mediaBaseOffsetY: DreamCardLayout.heroImageOffsetY,
+                insightFrameWidth: DreamCardLayout.insightCardWidth,
+                insightRotation: DreamCardLayout.insightCardRotation,
+                insightBaseOffsetX: hasMedia ? DreamCardLayout.insightCardOffsetX : DreamSpacing.xs,
+                insightBaseOffsetY: insightBaseOffsetY
+            ) {
+                EmptyView()
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
@@ -278,24 +349,26 @@ private struct DreamDetailHeroStackView: View {
     let item: DreamCardSnapshot
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            if item.hasHeroMedia {
-                DreamHeroMediaCard(media: item.heroMedia)
-                    .frame(
-                        width: DreamCardLayout.detailHeroImageWidth,
-                        height: DreamCardLayout.detailHeroImageHeight
-                    )
-                    .rotationEffect(.degrees(DreamCardLayout.detailHeroImageRotation))
-                    .offset(y: DreamCardLayout.detailHeroImageOffsetY)
-            }
+        GeometryReader { proxy in
+            let hasMedia = item.hasHeroMedia
+            let stageWidth = max(proxy.size.width, 1)
+            let insightBaseOffsetY = hasMedia ? DreamCardLayout.detailInsightCardOffsetY : DreamCardLayout.insightCardOffsetY
 
-            DreamInsightOverlayCard(insight: item.insight)
-                .frame(width: DreamCardLayout.detailInsightCardWidth)
-                .rotationEffect(.degrees(DreamCardLayout.detailInsightCardRotation))
-                .offset(
-                    x: item.hasHeroMedia ? DreamCardLayout.detailInsightCardOffsetX : DreamSpacing.xs,
-                    y: DreamCardLayout.detailInsightCardOffsetY
-                )
+            DreamInteractiveHeroLayerStack(
+                item: item,
+                stageWidth: stageWidth,
+                mediaFrameWidth: DreamCardLayout.detailHeroImageWidth,
+                mediaFrameHeight: DreamCardLayout.detailHeroImageHeight,
+                mediaRotation: DreamCardLayout.detailHeroImageRotation,
+                mediaBaseOffsetX: 0,
+                mediaBaseOffsetY: DreamCardLayout.detailHeroImageOffsetY,
+                insightFrameWidth: DreamCardLayout.detailInsightCardWidth,
+                insightRotation: DreamCardLayout.detailInsightCardRotation,
+                insightBaseOffsetX: hasMedia ? DreamCardLayout.detailInsightCardOffsetX : DreamSpacing.xs,
+                insightBaseOffsetY: insightBaseOffsetY
+            ) {
+                EmptyView()
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }

@@ -182,18 +182,30 @@ enum DreamCardLayout {
     static let timelineMonthFontSize: CGFloat = 13
     static let timelineMonthBaselineOffset: CGFloat = 8
 
-    static let heroHeight: CGFloat = 224
-    static let heroImageWidth: CGFloat = 214
-    static let heroImageHeight: CGFloat = 206
+    static let insightCardWidth: CGFloat = 166
+    // ---- 分析卡片可视高度（由组件的固定分区高度汇总）----
+    static let insightCardVisualHeight: CGFloat = 222.5
+    static let heroMediaHeightScaleToInsight: CGFloat = 1.2
+    static var heroImageWidth: CGFloat {
+        insightCardWidth * heroMediaHeightScaleToInsight
+    }
+    static var heroImageHeight: CGFloat {
+        insightCardVisualHeight * heroMediaHeightScaleToInsight
+    }
+    // ---- Hero 舞台高度随影像容器联动，保持摘要面板与图片重叠节奏 ----
+    static var heroHeight: CGFloat {
+        heroImageHeight + 18
+    }
     static let heroImageRotation: Double = -4
     static let heroImageOffsetY: CGFloat = 12
 
-    static let insightCardWidth: CGFloat = 166
     static let insightCardRotation: Double = 4.5
     static let insightCardOffsetX: CGFloat = 44
     static let insightCardOffsetY: CGFloat = 4
-    static let timelineFloatingInsightDropY: CGFloat = 20
     static let timelineFloatingInsightDropYNoMedia: CGFloat = 12
+    static var insightAlignedOffsetYToHeroMedia: CGFloat {
+        heroImageOffsetY + ((heroImageHeight - insightCardVisualHeight) * 0.5)
+    }
 
     // ---- Hero 合并组件几何：图片卡 + 分析卡视作同一簇，以屏幕中线为锚 ----
     static let timelineHeroClusterWidth: CGFloat = 252
@@ -248,24 +260,40 @@ enum DreamCardLayout {
     static let detailDividerTopPadding: CGFloat = DreamLayoutRhythm.dividerTopGap
     static let detailHeroDragIndicatorClearance: CGFloat = DreamSpacing.s
 
-    static let detailHeroContentHeight: CGFloat = 236
+    static var detailHeroContentHeight: CGFloat {
+        heroHeight
+    }
     static let detailHeroTopPadding: CGFloat = 12
     static let detailHeroBottomPadding: CGFloat = 24
     static var detailHeroContainerHeight: CGFloat {
         detailHeroDragIndicatorClearance + detailHeroTopPadding + detailHeroContentHeight + detailHeroBottomPadding
     }
 
-    static let detailHeroImageWidth: CGFloat = 172
-    static let detailHeroImageHeight: CGFloat = 164
-    static let detailHeroImageRotation: Double = -3.6
-    static let detailHeroImageOffsetY: CGFloat = 14
+    static var detailHeroImageWidth: CGFloat {
+        heroImageWidth
+    }
+    static var detailHeroImageHeight: CGFloat {
+        heroImageHeight
+    }
+    static var detailHeroImageRotation: Double {
+        heroImageRotation
+    }
+    static var detailHeroImageOffsetY: CGFloat {
+        heroImageOffsetY
+    }
 
     static var detailInsightCardWidth: CGFloat {
         insightCardWidth
     }
-    static let detailInsightCardRotation: Double = 4.0
-    static let detailInsightCardOffsetX: CGFloat = 34
-    static let detailInsightCardOffsetY: CGFloat = 4
+    static var detailInsightCardRotation: Double {
+        insightCardRotation
+    }
+    static var detailInsightCardOffsetX: CGFloat {
+        insightCardOffsetX
+    }
+    static var detailInsightCardOffsetY: CGFloat {
+        insightAlignedOffsetYToHeroMedia
+    }
 
     static let detailCloseButtonSize: CGFloat = 44
     static let detailCloseButtonInset: CGFloat = 8
