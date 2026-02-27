@@ -7,8 +7,8 @@
 
 /**
  * [INPUT]: 依赖 SwiftUI 与 DreamBookFoundation 令牌/基础组件能力
- * [OUTPUT]: 对外提供 DreamBookFoundationPreview 页面，用于展示梦之书设计系统基础分层、排版/版式规范与处理态容器演示
- * [POS]: DesignSystem/Preview/ 的基础预览页，按系统分区展示颜色、排版、版式、处理态组件原语与导航结构
+ * [OUTPUT]: 对外提供 DreamBookFoundationPreview 页面，用于展示梦之书设计系统基础分层并作为二级页面入口容器
+ * [POS]: DesignSystem/Preview/ 的基础预览页，按系统分区展示颜色、排版入口、处理态组件原语与导航结构
  * [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
  */
 
@@ -38,8 +38,7 @@ struct DreamBookFoundationPreview: View {
                 VStack(alignment: .leading, spacing: DreamSpacing.xxl) {
                     HeaderStrip()
                     ColorTokenSection(specs: colorSpecs)
-                    TypographyTokenSection()
-                    LayoutSpecSection()
+                    TypographySystemEntrySection()
                     SurfacePrimitiveSection()
                     NavigationSystemSection()
                     PageTemplateSection()
@@ -126,91 +125,18 @@ private struct ColorTokenSection: View {
     }
 }
 
-private struct TypographyTokenSection: View {
-    private let roleSpecs: [FoundationTextRoleSpec] = [
-        .init(role: .navTitle, sample: "梦境条目标题"),
-        .init(role: .cardTitle, sample: "潮声中的告别"),
-        .init(role: .body, sample: "列车代表你正在离开旧叙事，海浪象征情绪仍在波动。"),
-        .init(role: .bodyStrong, sample: "深度解析"),
-        .init(role: .caption, sample: "2025年12月14日 · AI洞察值"),
-        .init(role: .detailTime, sample: "11:21 上午"),
-        .init(role: .metric, sample: "82"),
-        .init(role: .metricUnit, sample: "分")
-    ]
-
+private struct TypographySystemEntrySection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DreamSpacing.m) {
             SectionTitle("排版系统")
 
-            VStack(alignment: .leading, spacing: DreamLayoutRhythm.groupGap) {
-                Text("层级用途与文字角色")
-                    .dreamRole(.bodyStrong)
-                    .foregroundColor(DreamColor.textPrimary)
-
-                VStack(alignment: .leading, spacing: DreamLayoutRhythm.rowGap) {
-                    ForEach(roleSpecs) { spec in
-                        TypographyRoleRow(spec: spec)
-                    }
-                }
-                .padding(DreamLayoutInsets.compactCard)
-                .background(DreamSurfaceCard(radius: DreamCornerRadius.lg, fill: DreamColor.cardStrong))
-                .dreamCardShadow()
-
-                TypographySpecNoteCard()
-            }
-        }
-    }
-}
-
-private struct LayoutSpecSection: View {
-    private let insetSpecs: [FoundationInsetSpec] = [
-        .init(name: "页面外边距", insets: DreamLayoutInsets.page, note: "列表/预览页基础安全边距"),
-        .init(name: "Sheet 内容区", insets: DreamLayoutInsets.sheetContent, note: "详情页与弹层内容起始边距"),
-        .init(name: "标准卡片内边距", insets: DreamLayoutInsets.card, note: "内容卡、说明卡默认内边距"),
-        .init(name: "紧凑卡片内边距", insets: DreamLayoutInsets.compactCard, note: "行卡片、紧凑信息模块"),
-        .init(name: "胶囊按钮内边距", insets: DreamLayoutInsets.pill, note: "状态标签/轻操作按钮")
-    ]
-
-    private let rhythmSpecs: [FoundationRhythmSpec] = [
-        .init(name: "页面区块间距", value: DreamLayoutRhythm.pageSectionGap, note: "一级区块之间"),
-        .init(name: "大区块间距", value: DreamLayoutRhythm.majorBlockGap, note: "Hero 与 Meta、正文块之间"),
-        .init(name: "组间距", value: DreamLayoutRhythm.groupGap, note: "卡片内部组块"),
-        .init(name: "行间距", value: DreamLayoutRhythm.rowGap, note: "标签行、信息行"),
-        .init(name: "紧凑间距", value: DreamLayoutRhythm.tightGap, note: "图标与文字、短标签")
-    ]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: DreamSpacing.m) {
-            SectionTitle("版式规范")
-
-            VStack(alignment: .leading, spacing: DreamLayoutRhythm.groupGap) {
-                Text("内外边距要求")
-                    .dreamRole(.bodyStrong)
-                    .foregroundColor(DreamColor.textPrimary)
-
-                VStack(alignment: .leading, spacing: DreamLayoutRhythm.rowGap) {
-                    ForEach(insetSpecs) { spec in
-                        LayoutInsetRow(spec: spec)
-                    }
-                }
-                .padding(DreamLayoutInsets.compactCard)
-                .background(DreamSurfaceCard(radius: DreamCornerRadius.lg, fill: DreamColor.cardStrong))
-                .dreamCardShadow()
-            }
-
-            VStack(alignment: .leading, spacing: DreamLayoutRhythm.groupGap) {
-                Text("纵向节奏要求")
-                    .dreamRole(.bodyStrong)
-                    .foregroundColor(DreamColor.textPrimary)
-
-                VStack(alignment: .leading, spacing: DreamLayoutRhythm.rowGap) {
-                    ForEach(rhythmSpecs) { spec in
-                        LayoutRhythmRow(spec: spec)
-                    }
-                }
-                .padding(DreamLayoutInsets.compactCard)
-                .background(DreamSurfaceCard(radius: DreamCornerRadius.lg, fill: DreamColor.cardStrong))
-                .dreamCardShadow()
+            ModuleEntryCard(
+                symbol: "textformat.abc.dottedunderline",
+                title: "文字角色与版式规范",
+                subtitle: "层级角色 / 内外边距 / 纵向节奏",
+                accessibilityID: "dream.preview.typography.entry"
+            ) {
+                DreamTypographySystemPreview()
             }
         }
     }
@@ -252,40 +178,14 @@ private struct PageTemplateSection: View {
         VStack(alignment: .leading, spacing: DreamSpacing.m) {
             SectionTitle("页面模板")
 
-            NavigationLink {
+            ModuleEntryCard(
+                symbol: "rectangle.stack.person.crop",
+                title: "梦境卡片列表与详情",
+                subtitle: "原生 Sheet 交互模板",
+                accessibilityID: "dream.preview.templates.entry"
+            ) {
                 DreamCardPageTemplatesPreview()
-            } label: {
-                HStack(spacing: DreamSpacing.m) {
-                    Image(systemName: "rectangle.stack.person.crop")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(DreamColor.textPrimary)
-                        .frame(width: 44, height: 44)
-                        .background(
-                            RoundedRectangle(cornerRadius: DreamCornerRadius.sm, style: .continuous)
-                                .fill(DreamColor.surface)
-                        )
-
-                    VStack(alignment: .leading, spacing: DreamSpacing.xxs) {
-                        Text("梦境卡片列表与详情")
-                            .dreamRole(.bodyStrong)
-                            .foregroundColor(DreamColor.textPrimary)
-                        Text("原生 Sheet 交互模板")
-                            .dreamRole(.caption)
-                            .foregroundColor(DreamColor.textSecondary)
-                    }
-
-                    Spacer(minLength: DreamSpacing.s)
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(DreamColor.textTertiary)
-                }
-                .padding(DreamSpacing.m)
-                .background(DreamSurfaceCard(radius: DreamCornerRadius.lg, fill: DreamColor.cardStrong))
-                .dreamCardShadow()
             }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("dream.preview.templates.entry")
         }
     }
 }
@@ -415,148 +315,68 @@ private struct DockTabButton: View {
 // MARK: - 小型原子
 // ============================================================
 
-private struct FoundationTextRoleSpec: Identifiable {
-    let role: DreamTextRole
-    let sample: String
-
-    var id: String { role.rawValue }
-}
-
-private struct FoundationInsetSpec: Identifiable {
-    let id = UUID()
-    let name: String
-    let insets: EdgeInsets
-    let note: String
-}
-
-private struct FoundationRhythmSpec: Identifiable {
-    let id = UUID()
-    let name: String
-    let value: CGFloat
-    let note: String
-}
-
 private struct FoundationColorSpec: Identifiable {
     let id = UUID()
     let name: String
     let color: Color
 }
 
-private struct TypographyRoleRow: View {
-    let spec: FoundationTextRoleSpec
+private struct ModuleEntryCard<Destination: View>: View {
+    let symbol: String
+    let title: String
+    let subtitle: String
+    let accessibilityID: String
+    let destination: Destination
+
+    init(
+        symbol: String,
+        title: String,
+        subtitle: String,
+        accessibilityID: String,
+        @ViewBuilder destination: () -> Destination
+    ) {
+        self.symbol = symbol
+        self.title = title
+        self.subtitle = subtitle
+        self.accessibilityID = accessibilityID
+        self.destination = destination()
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DreamSpacing.xxs) {
-            HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.s) {
-                Text(spec.role.usageTitle)
-                    .dreamRole(.bodyStrong)
+        NavigationLink {
+            destination
+        } label: {
+            HStack(spacing: DreamSpacing.m) {
+                Image(systemName: symbol)
+                    .font(.system(size: 20, weight: .semibold))
                     .foregroundColor(DreamColor.textPrimary)
+                    .frame(width: 44, height: 44)
+                    .background(
+                        RoundedRectangle(cornerRadius: DreamCornerRadius.sm, style: .continuous)
+                            .fill(DreamColor.surface)
+                    )
+
+                VStack(alignment: .leading, spacing: DreamSpacing.xxs) {
+                    Text(title)
+                        .dreamRole(.bodyStrong)
+                        .foregroundColor(DreamColor.textPrimary)
+                    Text(subtitle)
+                        .dreamRole(.caption)
+                        .foregroundColor(DreamColor.textSecondary)
+                }
 
                 Spacer(minLength: DreamSpacing.s)
 
-                Text(spec.role.rawValue)
-                    .dreamRole(.caption)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(DreamColor.textTertiary)
             }
-
-            Text(spec.sample)
-                .dreamRole(spec.role)
-                .foregroundColor(DreamColor.textPrimary)
-                .lineLimit(2)
-
-            Text(spec.role.usageNotes)
-                .dreamRole(.caption)
-                .foregroundColor(DreamColor.textSecondary)
+            .padding(DreamSpacing.m)
+            .background(DreamSurfaceCard(radius: DreamCornerRadius.lg, fill: DreamColor.cardStrong))
+            .dreamCardShadow()
         }
-        .padding(.vertical, DreamSpacing.xs)
-        .overlay(alignment: .bottom) {
-            Divider()
-                .overlay(DreamColor.stroke.opacity(0.42))
-        }
-    }
-}
-
-private struct TypographySpecNoteCard: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: DreamLayoutRhythm.rowGap) {
-            Text("排版约束")
-                .dreamRole(.bodyStrong)
-                .foregroundColor(DreamColor.textPrimary)
-
-            Text("标题负责导航与分段；正文负责阅读；caption 只承载辅助信息；metric 与 detailTime 仅用于高显著数字。")
-                .dreamRole(.caption)
-                .foregroundColor(DreamColor.textSecondary)
-                .lineSpacing(2)
-        }
-        .padding(DreamLayoutInsets.compactCard)
-        .background(DreamSurfaceCard(radius: DreamCornerRadius.lg, fill: DreamColor.cardStrong))
-        .dreamCardShadow()
-    }
-}
-
-private struct LayoutInsetRow: View {
-    let spec: FoundationInsetSpec
-
-    var body: some View {
-        HStack(alignment: .top, spacing: DreamSpacing.s) {
-            VStack(alignment: .leading, spacing: DreamSpacing.xxs) {
-                Text(spec.name)
-                    .dreamRole(.bodyStrong)
-                    .foregroundColor(DreamColor.textPrimary)
-
-                Text(spec.note)
-                    .dreamRole(.caption)
-                    .foregroundColor(DreamColor.textSecondary)
-            }
-
-            Spacer(minLength: DreamSpacing.s)
-
-            VStack(alignment: .trailing, spacing: 2) {
-                Text("T\(int(spec.insets.top)) L\(int(spec.insets.leading))")
-                    .dreamRole(.caption)
-                Text("B\(int(spec.insets.bottom)) R\(int(spec.insets.trailing))")
-                    .dreamRole(.caption)
-            }
-            .foregroundColor(DreamColor.textSecondary)
-        }
-        .padding(.vertical, DreamSpacing.xs)
-        .overlay(alignment: .bottom) {
-            Divider()
-                .overlay(DreamColor.stroke.opacity(0.42))
-        }
-    }
-
-    private func int(_ value: CGFloat) -> Int {
-        Int(value.rounded())
-    }
-}
-
-private struct LayoutRhythmRow: View {
-    let spec: FoundationRhythmSpec
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.s) {
-            VStack(alignment: .leading, spacing: DreamSpacing.xxs) {
-                Text(spec.name)
-                    .dreamRole(.bodyStrong)
-                    .foregroundColor(DreamColor.textPrimary)
-
-                Text(spec.note)
-                    .dreamRole(.caption)
-                    .foregroundColor(DreamColor.textSecondary)
-            }
-
-            Spacer(minLength: DreamSpacing.s)
-
-            Text("\(Int(spec.value.rounded())) pt")
-                .dreamRole(.caption)
-                .foregroundColor(DreamColor.textSecondary)
-        }
-        .padding(.vertical, DreamSpacing.xs)
-        .overlay(alignment: .bottom) {
-            Divider()
-                .overlay(DreamColor.stroke.opacity(0.42))
-        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier(accessibilityID)
     }
 }
 

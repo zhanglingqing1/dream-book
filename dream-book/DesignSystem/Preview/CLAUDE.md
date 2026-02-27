@@ -4,7 +4,8 @@
 成员清单
 DesignSystemPreviewPages.swift: 设计系统预览页面结构编排（含顶部亮暗切换按钮与首页各分区）。
 DesignSystemPreviewAtoms.swift: 预览原子组件与示例组件集合（卡片、按钮、导航等）。
-DreamBookFoundationPreview.swift: 梦之书 Foundation 分区页，集中展示颜色系统、排版系统、组件原语与导航系统示例。
+DreamBookFoundationPreview.swift: 梦之书 Foundation 分区主页，承载颜色/排版/模板等模块入口与基础组件示例。
+DreamTypographySystemPreview.swift: 排版系统二级页，集中承载文字角色、版式规范与纵向节奏要求。
 DreamCardPageTemplatesPreview.swift: 梦境卡片页面模板预览，承载列表模板、详情模板与 Page Sheet 弹出交互验收。
 
 架构决策（预览门禁原则）
@@ -12,6 +13,7 @@ DreamCardPageTemplatesPreview.swift: 梦境卡片页面模板预览，承载列�
 2. 页面模板预览必须区分“静态结构预览”和“真实交互语境验收”（如 Page Sheet），避免在错误语境下调 spacing。
 3. 当模板出现重叠、遮挡、空白异常时，预览页应帮助定位到令牌与布局约束来源，而不是通过预览层加补丁隐藏问题。
 4. 预览中的边距/节奏示例应与 Foundation 令牌保持同构，禁止在预览文件内发明另一套 spacing 规则。
+5. 主页面优先做“模块入口收纳”，细项规范下沉至二级页，保证分类清晰与首屏决策负担可控。
 
 开发规范（模板验收）
 1. 列表模板与详情模板的版式验收优先检查：页面边距、区块节奏、Hero 安全区、底部操作区安全预留。
