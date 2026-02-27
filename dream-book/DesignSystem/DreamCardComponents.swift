@@ -393,24 +393,38 @@ private struct DreamHeroMediaPlaceholder: View {
 
 struct DreamInsightOverlayCard: View {
     let insight: DreamCardInsight
+    private let cardCornerRadius: CGFloat = DreamCornerRadius.md
+    private let cardHorizontalPadding: CGFloat = 17
+    private let cardTopPadding: CGFloat = 10
+    private let cardBottomPadding: CGFloat = 10
+    private let innerStrokeInset: CGFloat = 8
+    private let innerStrokeWidth: CGFloat = 1.18
+    private let titleBandHeight: CGFloat = 34
+    private let subtitleBandHeight: CGFloat = 28
+    private let primaryMetricBandHeight: CGFloat = 38
+    private let secondaryMetricBandHeight: CGFloat = 32
+    private let titleRuleHeight: CGFloat = 2.9
+    private let sectionRuleHeight: CGFloat = 2.2
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 0) {
             Text(insight.title)
                 .font(.system(size: 16, weight: .bold, design: .serif))
                 .tracking(0.1)
                 .foregroundColor(ticketInk)
                 .lineLimit(1)
                 .minimumScaleFactor(0.88)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: titleBandHeight, alignment: .leading)
 
-            Rectangle()
-                .fill(ticketRuleStrong)
-                .frame(height: 2.2)
+            primaryConnectedRule
 
             Text(insight.subtitle)
                 .font(.system(size: 12, weight: .regular, design: .serif))
                 .foregroundColor(ticketInk.opacity(0.70))
                 .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: subtitleBandHeight, alignment: .leading)
 
             HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.xs) {
                 Text(insight.primary.label)
@@ -421,10 +435,12 @@ struct DreamInsightOverlayCard: View {
 
                 DreamMetricValueView(metric: insight.primary, role: .metric)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: primaryMetricBandHeight, alignment: .leading)
 
             Rectangle()
                 .fill(ticketRuleStrong)
-                .frame(height: 2.2)
+                .frame(height: sectionRuleHeight)
 
             ForEach(Array(insight.normalizedSecondary.enumerated()), id: \.element.id) { index, metric in
                 HStack(alignment: .firstTextBaseline, spacing: DreamSpacing.xs) {
@@ -436,6 +452,8 @@ struct DreamInsightOverlayCard: View {
 
                     DreamMetricValueView(metric: metric, role: .bodyStrong)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: secondaryMetricBandHeight, alignment: .leading)
 
                 if index < insight.normalizedSecondary.count - 1 {
                     Rectangle()
@@ -444,25 +462,43 @@ struct DreamInsightOverlayCard: View {
                 }
             }
         }
-        .padding(.horizontal, 17)
-        .padding(.vertical, 14)
+        .padding(.horizontal, cardHorizontalPadding)
+        .padding(.top, cardTopPadding)
+        .padding(.bottom, cardBottomPadding)
         .background(
-            RoundedRectangle(cornerRadius: DreamCornerRadius.md, style: .continuous)
+            RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
                 .fill(DreamColor.paperCard)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: DreamCornerRadius.md, style: .continuous)
-                .stroke(DreamColor.paperCardStroke.opacity(0.42), lineWidth: 0.9)
+            RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                .inset(by: innerStrokeInset)
+                .stroke(ticketBorder.opacity(0.58), lineWidth: innerStrokeWidth)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: DreamCornerRadius.md - 3, style: .continuous)
-                .inset(by: 2)
-                .stroke(DreamColor.paperCardInnerStroke.opacity(0.36), lineWidth: 0.6)
+            RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                .inset(by: innerStrokeInset + 0.78)
+                .stroke(DreamColor.paperCardInnerStroke.opacity(0.48), lineWidth: 0.4)
         )
+    }
+
+    // ---- 首横条连到内描边，其余横条保持内缩不连边 ----
+    private var primaryConnectedRule: some View {
+        Rectangle()
+            .fill(ticketRuleStrong)
+            .frame(height: titleRuleHeight)
+            .padding(.horizontal, -connectedRuleBleed)
+    }
+
+    private var connectedRuleBleed: CGFloat {
+        max(cardHorizontalPadding - innerStrokeInset - (innerStrokeWidth * 0.5), 0)
     }
 
     private var ticketInk: Color {
         DreamColor.textPrimary.opacity(0.90)
+    }
+
+    private var ticketBorder: Color {
+        DreamColor.textPrimary.opacity(0.58)
     }
 
     private var ticketRuleStrong: Color {
@@ -470,7 +506,7 @@ struct DreamInsightOverlayCard: View {
     }
 
     private var ticketRuleSoft: Color {
-        DreamColor.textPrimary.opacity(0.14)
+        DreamColor.textPrimary.opacity(0.16)
     }
 }
 
