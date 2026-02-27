@@ -25,10 +25,17 @@ struct DreamTimelineCardListView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: DreamCardLayout.timelineRowSpacing) {
-                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                    DreamTimelineCardRow(index: index, item: item) {
-                        onSelect(item)
+            VStack(alignment: .leading, spacing: 0) {
+                Text("近期梦境")
+                    .dreamRole(.navTitle)
+                    .foregroundColor(DreamColor.textPrimary)
+                    .padding(.bottom, DreamCardLayout.timelineSectionHeaderBottomPadding)
+
+                LazyVStack(alignment: .leading, spacing: DreamCardLayout.timelineRowSpacing) {
+                    ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                        DreamTimelineCardRow(index: index, item: item) {
+                            onSelect(item)
+                        }
                     }
                 }
             }
@@ -88,9 +95,8 @@ private struct DreamTimelineCardStage: View {
             let insightBaseOffsetX = clusterCenterX
                 + (hasMedia ? DreamCardLayout.timelineHeroInsightCenterOffsetX : 0)
                 - (DreamCardLayout.insightCardWidth * 0.5)
-            let insightBaseOffsetY = hasMedia
-                ? DreamCardLayout.insightAlignedOffsetYToHeroMedia
-                : DreamCardLayout.insightCardOffsetY + DreamCardLayout.timelineFloatingInsightDropYNoMedia
+            // ---- 统一基线：有图/无图都使用同一纵向锚点，保证标题距离一致 ----
+            let insightBaseOffsetY = DreamCardLayout.insightAlignedOffsetYToHeroMedia
 
             DreamInteractiveHeroLayerStack(
                 item: item,
@@ -265,20 +271,22 @@ private struct DreamTimelineDateColumn: View {
 
     var body: some View {
         // ---- 日号 + 月号上标：减重并形成更精致的主次错落 ----
-        HStack(alignment: .lastTextBaseline, spacing: DreamCardLayout.timelineDatePairSpacing) {
+        HStack(alignment: .bottom, spacing: DreamCardLayout.timelineDatePairSpacing) {
             Text(DreamCardFormatters.dayNumber(from: date))
-                .font(.system(size: DreamCardLayout.timelineDayFontSize, weight: .medium, design: .default))
+                .font(.system(size: DreamCardLayout.timelineDayFontSize, weight: .semibold, design: .default))
                 .tracking(-0.2)
                 .monospacedDigit()
                 .foregroundColor(DreamColor.textPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.86)
+                .layoutPriority(1)
 
             Text(DreamCardFormatters.monthNumber(from: date))
                 .font(.system(size: DreamCardLayout.timelineMonthFontSize, weight: .regular, design: .default))
                 .tracking(0.1)
+                .monospacedDigit()
                 .baselineOffset(DreamCardLayout.timelineMonthBaselineOffset)
-                .foregroundColor(DreamColor.textSecondary)
+                .foregroundColor(DreamColor.textTertiary)
                 .lineLimit(1)
         }
     }
@@ -323,7 +331,7 @@ struct DreamCardHeroStackView: View {
         GeometryReader { proxy in
             let hasMedia = item.hasHeroMedia
             let stageWidth = max(proxy.size.width, 1)
-            let insightBaseOffsetY = hasMedia ? DreamCardLayout.insightAlignedOffsetYToHeroMedia : DreamCardLayout.insightCardOffsetY
+            let insightBaseOffsetY = DreamCardLayout.insightAlignedOffsetYToHeroMedia
 
             DreamInteractiveHeroLayerStack(
                 item: item,
@@ -352,7 +360,7 @@ private struct DreamDetailHeroStackView: View {
         GeometryReader { proxy in
             let hasMedia = item.hasHeroMedia
             let stageWidth = max(proxy.size.width, 1)
-            let insightBaseOffsetY = hasMedia ? DreamCardLayout.detailInsightCardOffsetY : DreamCardLayout.insightCardOffsetY
+            let insightBaseOffsetY = DreamCardLayout.detailInsightCardOffsetY
 
             DreamInteractiveHeroLayerStack(
                 item: item,
