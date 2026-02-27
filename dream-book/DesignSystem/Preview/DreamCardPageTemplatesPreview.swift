@@ -81,7 +81,7 @@ private enum DreamCardMockData {
             moodEmoji: "🕊️",
             moodLabel: "紧张",
             sceneTag: "修复",
-            heroMedia: .gradient(theme: .lucidViolet),
+            heroMedia: .none,
             insight: DreamCardInsight(
                 title: "梦之书分析卡片",
                 subtitle: "本梦心理指标",

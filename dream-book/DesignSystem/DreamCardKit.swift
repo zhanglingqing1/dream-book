@@ -75,8 +75,16 @@ enum DreamMediaGradientTheme: String, Hashable, CaseIterable {
 }
 
 enum DreamMediaSource: Hashable {
+    case none
     case asset(name: String)
     case gradient(theme: DreamMediaGradientTheme)
+
+    var hasRenderableMedia: Bool {
+        if case .none = self {
+            return false
+        }
+        return true
+    }
 }
 
 struct DreamCardSnapshot: Identifiable, Hashable {
@@ -132,6 +140,10 @@ struct DreamCardSnapshot: Identifiable, Hashable {
 }
 
 extension DreamCardSnapshot {
+    var hasHeroMedia: Bool {
+        heroMedia.hasRenderableMedia
+    }
+
     var displaySummary: String {
         let trimmed = dreamSummary.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? "这段梦还没有摘要。" : trimmed
@@ -154,10 +166,15 @@ extension DreamCardSnapshot {
 
 enum DreamCardLayout {
     // ---- 列表模板 ----
-    static let listContentInsets: EdgeInsets = DreamLayoutInsets.page
+    static let listContentInsets: EdgeInsets = EdgeInsets(
+        top: DreamLayoutInsets.page.top,
+        leading: DreamSpacing.s,
+        bottom: DreamLayoutInsets.page.bottom,
+        trailing: DreamLayoutInsets.page.trailing
+    )
     static let timelineRowSpacing: CGFloat = DreamLayoutRhythm.pageSectionGap
-    static let timelineRowContentSpacing: CGFloat = DreamLayoutRhythm.groupGap
-    static let timelineColumnWidth: CGFloat = 62
+    static let timelineRowContentSpacing: CGFloat = DreamSpacing.s
+    static let timelineColumnWidth: CGFloat = 56
     static let timelineTopPadding: CGFloat = 10
     static let timelineDebugRowBottomMargin: CGFloat = 40
     static let timelineDatePairSpacing: CGFloat = 3
@@ -166,18 +183,29 @@ enum DreamCardLayout {
     static let timelineMonthBaselineOffset: CGFloat = 8
 
     static let heroHeight: CGFloat = 224
-    static let heroImageWidth: CGFloat = 196
-    static let heroImageHeight: CGFloat = 186
+    static let heroImageWidth: CGFloat = 214
+    static let heroImageHeight: CGFloat = 206
     static let heroImageRotation: Double = -4
-    static let heroImageOffsetY: CGFloat = 16
+    static let heroImageOffsetY: CGFloat = 12
 
-    static let insightCardWidth: CGFloat = 188
+    static let insightCardWidth: CGFloat = 166
     static let insightCardRotation: Double = 4.5
     static let insightCardOffsetX: CGFloat = 44
     static let insightCardOffsetY: CGFloat = 4
-    static let timelineFloatingInsightDropY: CGFloat = 28
-    static let timelineFloatingInsightTrailingInset: CGFloat = 8
-    static let timelineFloatingInsightWidthRatio: CGFloat = 0.68
+    static let timelineFloatingInsightDropY: CGFloat = 20
+    static let timelineFloatingInsightDropYNoMedia: CGFloat = 12
+    static let timelineHeroClusterWidth: CGFloat = 252
+    static let timelineHeroClusterCenterBiasX: CGFloat = -10
+    static let timelineHeroMediaLeading: CGFloat = 0
+    static let timelineHeroInsightLeading: CGFloat = 78
+    static let timelineLayerSwitchSwipeThreshold: CGFloat = 26
+    static let timelineLayerBackScale: CGFloat = 0.954
+    static let timelineLayerBackOpacity: Double = 0.94
+    static let timelineLayerDepthOffsetX: CGFloat = 10
+    static let timelineLayerDepthOffsetY: CGFloat = 12
+    static let timelineLayerParallaxRange: CGFloat = 7
+    static let timelineLayerSwitchAnimationResponse: Double = 0.42
+    static let timelineLayerSwitchAnimationDamping: Double = 0.84
 
     static let timelineSummaryBottomBreathing: CGFloat = DreamLayoutRhythm.groupGap
     static let summaryCardTopPadding: CGFloat = 72
@@ -223,7 +251,9 @@ enum DreamCardLayout {
     static let detailHeroImageRotation: Double = -3.6
     static let detailHeroImageOffsetY: CGFloat = 14
 
-    static let detailInsightCardWidth: CGFloat = 168
+    static var detailInsightCardWidth: CGFloat {
+        insightCardWidth
+    }
     static let detailInsightCardRotation: Double = 4.0
     static let detailInsightCardOffsetX: CGFloat = 34
     static let detailInsightCardOffsetY: CGFloat = 4

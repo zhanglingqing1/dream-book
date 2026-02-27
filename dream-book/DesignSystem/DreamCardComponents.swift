@@ -44,63 +44,150 @@ private struct DreamTimelineCardRow: View {
     let onTap: () -> Void
 
     var body: some View {
-        Button(action: onTap) {
-            HStack(alignment: .top, spacing: DreamCardLayout.timelineRowContentSpacing) {
-                DreamTimelineDateColumn(date: item.recordedAt)
-                    .frame(width: DreamCardLayout.timelineColumnWidth)
-                    .padding(.top, DreamCardLayout.timelineTopPadding)
+        HStack(alignment: .top, spacing: DreamCardLayout.timelineRowContentSpacing) {
+            DreamTimelineDateColumn(date: item.recordedAt)
+                .frame(width: DreamCardLayout.timelineColumnWidth)
+                .padding(.top, DreamCardLayout.timelineTopPadding)
 
-                VStack(alignment: .leading, spacing: 0) {
-                    DreamTimelineCardStage(item: item)
+            VStack(alignment: .leading, spacing: 0) {
+                DreamTimelineCardStage(item: item, onSelect: onTap)
 
-                    // ---- 时间标签：卡片外部下方独立呈现 ----
-                    Text(DreamCardFormatters.clockTime(from: item.recordedAt))
-                        .dreamRole(.caption)
-                        .foregroundColor(DreamColor.textSecondary)
-                        .padding(.top, DreamCardLayout.summaryTimeTopPadding)
-                }
+                // ---- 时间标签：卡片外部下方独立呈现 ----
+                Text(DreamCardFormatters.clockTime(from: item.recordedAt))
+                    .dreamRole(.caption)
+                    .foregroundColor(DreamColor.textSecondary)
+                    .padding(.top, DreamCardLayout.summaryTimeTopPadding)
+                    .onTapGesture(perform: onTap)
             }
-            .contentShape(Rectangle())
-            .padding(.bottom, DreamCardLayout.timelineDebugRowBottomMargin)
         }
-        .buttonStyle(.plain)
+        .contentShape(Rectangle())
+        .padding(.bottom, DreamCardLayout.timelineDebugRowBottomMargin)
         .accessibilityIdentifier("dream.list.row.\(index)")
     }
 }
 
+private enum DreamTimelineTopLayer {
+    case insight
+    case media
+}
+
 private struct DreamTimelineCardStage: View {
     let item: DreamCardSnapshot
+    let onSelect: () -> Void
+
+    @State private var topLayer: DreamTimelineTopLayer = .insight
+    @GestureState private var swipeTranslation: CGFloat = 0
 
     var body: some View {
         GeometryReader { proxy in
-            let stageWidth = proxy.size.width
-            let ticketWidth = stageWidth * DreamCardLayout.timelineFloatingInsightWidthRatio
+            let hasMedia = item.hasHeroMedia
+            let stageWidth = max(proxy.size.width, 1)
+            let clampedSwipeProgress = max(-1, min(1, swipeTranslation / (stageWidth * 0.45)))
+            let mediaIsTop = hasMedia && topLayer == .media
+            let insightIsTop = !hasMedia || topLayer == .insight
+            let clusterWidth = hasMedia ? DreamCardLayout.timelineHeroClusterWidth : DreamCardLayout.insightCardWidth
+            let clusterOriginX = max(0, (stageWidth - clusterWidth) * 0.5) + DreamCardLayout.timelineHeroClusterCenterBiasX
+            let mediaBaseOffsetX = clusterOriginX + DreamCardLayout.timelineHeroMediaLeading
+            let insightBaseOffsetX = hasMedia
+                ? clusterOriginX + DreamCardLayout.timelineHeroInsightLeading
+                : max(0, (stageWidth - DreamCardLayout.insightCardWidth) * 0.5) + DreamCardLayout.timelineHeroClusterCenterBiasX
+            let insightBaseOffsetY = hasMedia
+                ? DreamCardLayout.insightCardOffsetY + DreamCardLayout.timelineFloatingInsightDropY
+                : DreamCardLayout.insightCardOffsetY + DreamCardLayout.timelineFloatingInsightDropYNoMedia
+            let mediaDepthOffsetX = mediaIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetX
+            let mediaDepthOffsetY = mediaIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetY
+            let insightDepthOffsetX = insightIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetX
+            let insightDepthOffsetY = insightIsTop ? 0 : DreamCardLayout.timelineLayerDepthOffsetY
+            let mediaParallaxX = clampedSwipeProgress * DreamCardLayout.timelineLayerParallaxRange * (mediaIsTop ? 0.85 : 0.5)
+            let insightParallaxX = clampedSwipeProgress * DreamCardLayout.timelineLayerParallaxRange * (insightIsTop ? -0.75 : -0.45)
 
             ZStack(alignment: .topLeading) {
-                DreamHeroMediaCard(media: item.heroMedia)
-                    .frame(width: DreamCardLayout.heroImageWidth, height: DreamCardLayout.heroImageHeight)
-                    .rotationEffect(.degrees(DreamCardLayout.heroImageRotation))
-                    .offset(y: DreamCardLayout.heroImageOffsetY)
-                    .zIndex(0)
+                if hasMedia {
+                    DreamHeroMediaCard(media: item.heroMedia)
+                        .frame(width: DreamCardLayout.heroImageWidth, height: DreamCardLayout.heroImageHeight)
+                        .rotationEffect(
+                            .degrees(
+                                mediaIsTop
+                                    ? DreamCardLayout.heroImageRotation
+                                    : DreamCardLayout.heroImageRotation - 1.2
+                            )
+                        )
+                        .scaleEffect(mediaIsTop ? 1 : DreamCardLayout.timelineLayerBackScale)
+                        .opacity(mediaIsTop ? 1 : DreamCardLayout.timelineLayerBackOpacity)
+                        .offset(
+                            x: mediaBaseOffsetX + mediaDepthOffsetX + mediaParallaxX,
+                            y: DreamCardLayout.heroImageOffsetY + mediaDepthOffsetY
+                        )
+                        .zIndex(mediaIsTop ? 2.6 : 1.2)
+                        .onTapGesture {
+                            bringToFront(.media)
+                        }
+                }
 
                 DreamSummaryPanel(item: item)
                     .offset(y: DreamCardLayout.heroHeight - DreamCardLayout.summaryCardTopPadding)
-                    .zIndex(1)
+                    .zIndex(0.2)
+                    .onTapGesture(perform: onSelect)
 
                 DreamInsightOverlayCard(insight: item.insight)
-                    .frame(width: ticketWidth)
-                    .rotationEffect(.degrees(DreamCardLayout.insightCardRotation))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                    .frame(width: DreamCardLayout.insightCardWidth)
+                    .rotationEffect(
+                        .degrees(
+                            insightIsTop
+                                ? DreamCardLayout.insightCardRotation
+                                : DreamCardLayout.insightCardRotation - 1.1
+                        )
+                    )
+                    .scaleEffect(insightIsTop ? 1 : DreamCardLayout.timelineLayerBackScale)
+                    .opacity(insightIsTop ? 1 : DreamCardLayout.timelineLayerBackOpacity)
                     .offset(
-                        x: -DreamCardLayout.timelineFloatingInsightTrailingInset,
-                        y: DreamCardLayout.insightCardOffsetY + DreamCardLayout.timelineFloatingInsightDropY
+                        x: insightBaseOffsetX + insightDepthOffsetX + insightParallaxX,
+                        y: insightBaseOffsetY + insightDepthOffsetY
                     )
                     .dreamFloatingShadow()
-                    .zIndex(2)
+                    .zIndex(insightIsTop ? 2.8 : 1.4)
+                    .onTapGesture {
+                        bringToFront(.insight)
+                    }
             }
         }
         .frame(maxWidth: .infinity)
         .frame(height: DreamCardLayout.timelineStageHeight)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 14, coordinateSpace: .local)
+                .updating($swipeTranslation) { value, state, _ in
+                    guard item.hasHeroMedia else { return }
+                    guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                    state = value.translation.width
+                }
+                .onEnded { value in
+                    guard item.hasHeroMedia else { return }
+                    let translation = value.translation
+                    guard abs(translation.width) > abs(translation.height) else { return }
+                    guard abs(translation.width) >= DreamCardLayout.timelineLayerSwitchSwipeThreshold else { return }
+                    toggleTopLayer()
+                }
+        )
+        .animation(layerSwitchAnimation, value: topLayer)
+    }
+
+    private func bringToFront(_ layer: DreamTimelineTopLayer) {
+        withAnimation(layerSwitchAnimation) {
+            topLayer = layer
+        }
+    }
+
+    private func toggleTopLayer() {
+        withAnimation(layerSwitchAnimation) {
+            topLayer = (topLayer == .insight) ? .media : .insight
+        }
+    }
+
+    private var layerSwitchAnimation: Animation {
+        .spring(
+            response: DreamCardLayout.timelineLayerSwitchAnimationResponse,
+            dampingFraction: DreamCardLayout.timelineLayerSwitchAnimationDamping
+        )
     }
 }
 
@@ -171,16 +258,18 @@ struct DreamCardHeroStackView: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            DreamHeroMediaCard(media: item.heroMedia)
-                .frame(width: DreamCardLayout.heroImageWidth, height: DreamCardLayout.heroImageHeight)
-                .rotationEffect(.degrees(DreamCardLayout.heroImageRotation))
-                .offset(y: DreamCardLayout.heroImageOffsetY)
+            if item.hasHeroMedia {
+                DreamHeroMediaCard(media: item.heroMedia)
+                    .frame(width: DreamCardLayout.heroImageWidth, height: DreamCardLayout.heroImageHeight)
+                    .rotationEffect(.degrees(DreamCardLayout.heroImageRotation))
+                    .offset(y: DreamCardLayout.heroImageOffsetY)
+            }
 
             DreamInsightOverlayCard(insight: item.insight)
                 .frame(width: DreamCardLayout.insightCardWidth)
                 .rotationEffect(.degrees(DreamCardLayout.insightCardRotation))
                 .offset(
-                    x: DreamCardLayout.insightCardOffsetX,
+                    x: item.hasHeroMedia ? DreamCardLayout.insightCardOffsetX : DreamSpacing.xs,
                     y: DreamCardLayout.insightCardOffsetY
                 )
         }
@@ -193,19 +282,21 @@ private struct DreamDetailHeroStackView: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            DreamHeroMediaCard(media: item.heroMedia)
-                .frame(
-                    width: DreamCardLayout.detailHeroImageWidth,
-                    height: DreamCardLayout.detailHeroImageHeight
-                )
-                .rotationEffect(.degrees(DreamCardLayout.detailHeroImageRotation))
-                .offset(y: DreamCardLayout.detailHeroImageOffsetY)
+            if item.hasHeroMedia {
+                DreamHeroMediaCard(media: item.heroMedia)
+                    .frame(
+                        width: DreamCardLayout.detailHeroImageWidth,
+                        height: DreamCardLayout.detailHeroImageHeight
+                    )
+                    .rotationEffect(.degrees(DreamCardLayout.detailHeroImageRotation))
+                    .offset(y: DreamCardLayout.detailHeroImageOffsetY)
+            }
 
             DreamInsightOverlayCard(insight: item.insight)
                 .frame(width: DreamCardLayout.detailInsightCardWidth)
                 .rotationEffect(.degrees(DreamCardLayout.detailInsightCardRotation))
                 .offset(
-                    x: DreamCardLayout.detailInsightCardOffsetX,
+                    x: item.hasHeroMedia ? DreamCardLayout.detailInsightCardOffsetX : DreamSpacing.xs,
                     y: DreamCardLayout.detailInsightCardOffsetY
                 )
         }
@@ -247,6 +338,12 @@ private struct DreamHeroMediaCard: View {
 
     private var baseGradient: LinearGradient {
         switch media {
+        case .none:
+            return LinearGradient(
+                colors: [DreamColor.surface, DreamColor.card],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
         case .asset:
             return LinearGradient(
                 colors: [DreamColor.surface, DreamColor.cardStrong],
@@ -274,16 +371,7 @@ private struct DreamHeroMediaPlaceholder: View {
                 endPoint: .bottomTrailing
             )
 
-            VStack(alignment: .leading, spacing: DreamSpacing.s) {
-                HStack(spacing: DreamSpacing.xs) {
-                    Circle()
-                        .fill(DreamColor.inverseText.opacity(0.84))
-                        .frame(width: 9, height: 9)
-                    Circle()
-                        .fill(DreamColor.inverseText.opacity(0.62))
-                        .frame(width: 9, height: 9)
-                }
-
+            VStack(alignment: .leading, spacing: 0) {
                 Spacer(minLength: 0)
 
                 Text("梦境影像")
@@ -296,6 +384,8 @@ private struct DreamHeroMediaPlaceholder: View {
 
     private var glowColors: [Color] {
         switch media {
+        case .none:
+            return [DreamColor.surface.opacity(0.96), DreamColor.card.opacity(0.92)]
         case .asset:
             return [DreamColor.photoGlowViolet.opacity(0.44), DreamColor.photoGlowMint.opacity(0.36)]
         case let .gradient(theme):
