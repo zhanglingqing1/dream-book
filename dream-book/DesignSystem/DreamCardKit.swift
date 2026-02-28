@@ -234,15 +234,16 @@ enum DreamCardLayout {
 
     static let timelineSummaryBottomBreathing: CGFloat = DreamLayoutRhythm.groupGap
     static let summaryCardTopPadding: CGFloat = 72
-    static let summaryPanelOverlayClearance: CGFloat = 54
-    static let summaryPanelMinHeight: CGFloat = 204
+    static let summaryPanelOverlayClearance: CGFloat = 68
+    static let summaryPanelMinHeight: CGFloat = 192
     static let summaryBodyLineLimit: Int = 4
     static let summaryTitleLineLimit: Int = 2
     static let summaryBodyLineSpacing: CGFloat = 6
-    static let summaryPanelInsets: EdgeInsets = EdgeInsets(top: 24, leading: 24, bottom: 16, trailing: 24)
+    static let summaryPanelInsets: EdgeInsets = EdgeInsets(top: 24, leading: 24, bottom: 12, trailing: 24)
     static let summaryPanelGroupSpacing: CGFloat = 14
     static let summaryPanelRowSpacing: CGFloat = DreamLayoutRhythm.rowGap
-    static let summaryTimeTopPadding: CGFloat = 5
+    static let summaryTimeTopPadding: CGFloat = 3
+    static let summaryTimeLeadingInset: CGFloat = DreamSpacing.s
 
     static var summaryPanelRenderedMinHeight: CGFloat {
         summaryPanelMinHeight + summaryPanelInsets.top + summaryPanelInsets.bottom

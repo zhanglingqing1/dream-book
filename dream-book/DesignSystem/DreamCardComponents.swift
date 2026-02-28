@@ -28,7 +28,7 @@ struct DreamTimelineCardListView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text("近期梦境")
                     .dreamRole(.navTitle)
-                    .font(.system(size: 18, weight: .semibold, design: .serif))
+                    .font(.system(size: 12, weight: .semibold, design: .serif))
                     .foregroundColor(DreamColor.textPrimary)
                     .padding(.bottom, DreamCardLayout.timelineSectionHeaderBottomPadding)
 
@@ -65,6 +65,7 @@ private struct DreamTimelineCardRow: View {
                     .dreamRole(.caption)
                     .foregroundColor(DreamColor.textSecondary)
                     .padding(.top, DreamCardLayout.summaryTimeTopPadding)
+                    .padding(.leading, DreamCardLayout.summaryTimeLeadingInset)
                     .onTapGesture(perform: onTap)
             }
         }
