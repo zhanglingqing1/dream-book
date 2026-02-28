@@ -2,13 +2,11 @@
 > L2 | 父级: /dream-book/CLAUDE.md
 
 成员清单
-DesignSystemProtocol.swift: 设计系统色值常量与语义色基线，作为视觉真相源。
-DesignTokens.swift: 视觉令牌层（颜色、排版、间距、圆角、阴影、组件背景），统一消费双模式色值。
-DreamBookFoundation.swift: 梦之书基础层，承载颜色/排版/几何/阴影/基础容器组件令牌真相源。
+DreamBookFoundation.swift: 梦之书基础层，承载颜色/排版/几何/阴影/基础容器组件令牌真相源，并提供统一区块标题组件（DreamSectionTitle）。
 DreamCardKit.swift: 梦境卡片数据契约与布局令牌层，统一定义列表/详情的数据结构、时间格式与回退策略。
 DreamCardComponents.swift: 梦境卡片组件层，封装 Hero 叠层、时间轴列表、Page Sheet 详情与底部操作条。
 DesignSystemPreview.swift: 设计系统预览总入口，当前挂载梦之书 Foundation 分区页并承接后续模块演进。
-Preview/: 设计系统预览页面层与原子组件层。
+Preview/: 设计系统预览页面层。
 
 架构决策（系统性修复原则）
 1. 设计系统修复优先改“规则归属”而非单点数值：先确定 Foundation 令牌、模块布局令牌、组件实现的职责边界，再调 spacing。
@@ -38,6 +36,8 @@ Preview/: 设计系统预览页面层与原子组件层。
 12. 时间轨道重平衡：缩小列表左侧安全边距、收窄日期列并压缩轨道与内容间距，将“日期 + 叠层 + 文本卡”整行重心左移，避免整体偏右。
 13. Summary Panel 标题与正文均按用户输入原文渲染：不做 `emoji + 标题` 拼接、不注入正文 emoji、不添加摘要回退文案。
 14. Hero 区改为“整行中线驱动”定位：将梦境影像卡与分析卡视作合并簇，以屏幕中点为锚；无影像场景仅分析卡单独落在中线上。
+15. 排版系统由模板页反向收敛：`navTitle/cardTitle/body` 下调并去除组件内裸字号覆盖；列表页眉与 Foundation 分区标题统一复用 `DreamSectionTitle`，回到单一语义入口。
+16. 删除旧 `App*` 轨（`DesignTokens.swift` / `DesignSystemProtocol.swift` 与旧预览页），DesignSystem 仅保留 `Dream*` 单轨令牌体系。
 
 法则: 成员完整·一行一文件·父级链接·技术词前置
 

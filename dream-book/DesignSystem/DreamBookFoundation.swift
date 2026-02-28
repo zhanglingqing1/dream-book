@@ -72,15 +72,13 @@ enum DreamGradient {
 // ============================================================
 
 enum DreamTypography {
-    static let pageTitle = Font.system(size: 22, weight: .semibold, design: .serif)
-    static let sectionTitle = Font.system(size: 54, weight: .semibold, design: .serif)
-    static let cardTitle = Font.system(size: 44, weight: .semibold, design: .serif)
-    static let body = Font.system(size: 17, weight: .regular, design: .serif)
-    static let bodyStrong = Font.system(size: 17, weight: .semibold, design: .serif)
-    static let caption = Font.system(size: 13, weight: .regular, design: .default)
-    static let detailTime = Font.system(size: 30, weight: .semibold, design: .default)
-    static let metric = Font.system(size: 48, weight: .semibold, design: .default)
-    static let metricUnit = Font.system(size: 20, weight: .semibold, design: .default)
+    static let navTitle = Font.system(size: 16, weight: .semibold, design: .serif)
+    static let cardTitle = Font.system(size: 20, weight: .semibold, design: .serif)
+    static let body = Font.system(size: 14, weight: .regular, design: .serif)
+    static let bodyStrong = Font.system(size: 14, weight: .semibold, design: .serif)
+    static let caption = Font.system(size: 12, weight: .regular, design: .default)
+    static let detailTime = Font.system(size: 28, weight: .semibold, design: .default)
+    static let metric = Font.system(size: 44, weight: .semibold, design: .default)
 }
 
 struct DreamTextStyle {
@@ -92,23 +90,19 @@ struct DreamTextStyle {
 
 enum DreamTextRole: String, CaseIterable {
     case navTitle
-    case sectionTitle
     case cardTitle
     case body
     case bodyStrong
     case caption
     case detailTime
     case metric
-    case metricUnit
 
     var style: DreamTextStyle {
         switch self {
         case .navTitle:
-            return DreamTextStyle(font: DreamTypography.pageTitle, tracking: 0.2, lineSpacing: 0, monospacedDigits: false)
-        case .sectionTitle:
-            return DreamTextStyle(font: DreamTypography.sectionTitle, tracking: 0, lineSpacing: 0, monospacedDigits: false)
+            return DreamTextStyle(font: DreamTypography.navTitle, tracking: 0.1, lineSpacing: 0, monospacedDigits: false)
         case .cardTitle:
-            return DreamTextStyle(font: DreamTypography.cardTitle, tracking: 0, lineSpacing: 1, monospacedDigits: false)
+            return DreamTextStyle(font: DreamTypography.cardTitle, tracking: 0.1, lineSpacing: 1, monospacedDigits: false)
         case .body:
             return DreamTextStyle(font: DreamTypography.body, tracking: 0, lineSpacing: 2, monospacedDigits: false)
         case .bodyStrong:
@@ -119,8 +113,6 @@ enum DreamTextRole: String, CaseIterable {
             return DreamTextStyle(font: DreamTypography.detailTime, tracking: -0.2, lineSpacing: 0, monospacedDigits: true)
         case .metric:
             return DreamTextStyle(font: DreamTypography.metric, tracking: -0.5, lineSpacing: 0, monospacedDigits: true)
-        case .metricUnit:
-            return DreamTextStyle(font: DreamTypography.metricUnit, tracking: 0, lineSpacing: 0, monospacedDigits: false)
         }
     }
 
@@ -130,11 +122,9 @@ enum DreamTextRole: String, CaseIterable {
     var usageTitle: String {
         switch self {
         case .navTitle:
-            return "页面/区块标题"
-        case .sectionTitle:
-            return "超大章节标题"
+            return "区块标题"
         case .cardTitle:
-            return "主卡片标题"
+            return "卡片标题"
         case .body:
             return "正文内容"
         case .bodyStrong:
@@ -145,19 +135,15 @@ enum DreamTextRole: String, CaseIterable {
             return "详情主时间"
         case .metric:
             return "单值指标"
-        case .metricUnit:
-            return "指标单位"
         }
     }
 
     var usageNotes: String {
         switch self {
         case .navTitle:
-            return "用于页面名、梦境段标题；不要与正文混排在同一行。"
-        case .sectionTitle:
-            return "只用于少数沉浸式封面，不进入常规列表/详情正文。"
+            return "用于详情区块标题与中层标题，不与正文混排。"
         case .cardTitle:
-            return "用于主视觉卡首屏标题；优先单行，必要时允许两行。"
+            return "用于梦境摘要卡主标题；优先单行，必要时两行。"
         case .body:
             return "长文本默认角色，保持可读行距；适合叙事与原文。"
         case .bodyStrong:
@@ -168,8 +154,6 @@ enum DreamTextRole: String, CaseIterable {
             return "详情页时间专用，同一行中的时分/上午下午必须同级。"
         case .metric:
             return "用于单值冲击型数字（如评分/热量），避免用于列表行文。"
-        case .metricUnit:
-            return "仅跟随 metric 使用，不单独承担信息层级。"
         }
     }
 }
@@ -440,6 +424,20 @@ struct DreamDockPlate: View {
                     lineWidth: DreamSurfaceStyle.borderWidth
                 )
         }
+    }
+}
+
+struct DreamSectionTitle: View {
+    let text: String
+
+    init(_ text: String) {
+        self.text = text
+    }
+
+    var body: some View {
+        Text(text)
+            .dreamRole(.navTitle)
+            .foregroundColor(DreamColor.textPrimary)
     }
 }
 

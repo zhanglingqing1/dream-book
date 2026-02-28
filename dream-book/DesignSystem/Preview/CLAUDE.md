@@ -2,8 +2,6 @@
 > L2 | 父级: /dream-book/DesignSystem/CLAUDE.md
 
 成员清单
-DesignSystemPreviewPages.swift: 设计系统预览页面结构编排（含顶部亮暗切换按钮与首页各分区）。
-DesignSystemPreviewAtoms.swift: 预览原子组件与示例组件集合（卡片、按钮、导航等）。
 DreamBookFoundationPreview.swift: 梦之书 Foundation 分区主页，承载颜色/排版/模板等模块入口与基础组件示例。
 DreamTypographySystemPreview.swift: 排版系统二级页，集中承载文字角色、版式规范与纵向节奏要求。
 DreamCardPageTemplatesPreview.swift: 梦境卡片页面模板预览，承载列表模板、详情模板与 Page Sheet 弹出交互验收。

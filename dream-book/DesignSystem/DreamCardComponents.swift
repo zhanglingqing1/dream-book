@@ -26,10 +26,7 @@ struct DreamTimelineCardListView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                Text("近期梦境")
-                    .dreamRole(.navTitle)
-                    .font(.system(size: 12, weight: .semibold, design: .serif))
-                    .foregroundColor(DreamColor.textPrimary)
+                DreamSectionTitle("近期梦境")
                     .padding(.bottom, DreamCardLayout.timelineSectionHeaderBottomPadding)
 
                 LazyVStack(alignment: .leading, spacing: DreamCardLayout.timelineRowSpacing) {
@@ -301,15 +298,13 @@ private struct DreamSummaryPanel: View {
         VStack(alignment: .leading, spacing: DreamCardLayout.summaryPanelGroupSpacing) {
             // ---- 标题区：按用户输入原文展示，不做拼接干预 ----
             Text(item.dreamTitle)
-                .dreamRole(.navTitle)
-                .font(.system(size: 20, weight: .semibold, design: .serif))
+                .dreamRole(.cardTitle)
                 .foregroundColor(DreamColor.textPrimary)
                 .lineLimit(DreamCardLayout.summaryTitleLineLimit)
 
             // ---- 正文区：按用户输入原文展示，不注入 emoji 或回退文案 ----
             Text(item.dreamSummary)
-                .font(.system(size: 14, weight: .regular, design: .serif))
-                .tracking(0.05)
+                .dreamRole(.body)
                 .foregroundColor(DreamColor.textSecondary.opacity(0.88))
                 .lineLimit(DreamCardLayout.summaryBodyLineLimit)
                 .lineSpacing(DreamCardLayout.summaryBodyLineSpacing)

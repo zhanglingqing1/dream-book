@@ -16,14 +16,13 @@ import SwiftUI
 
 struct DreamTypographySystemPreview: View {
     private let roleSpecs: [FoundationTextRoleSpec] = [
-        .init(role: .navTitle, sample: "梦境条目标题"),
+        .init(role: .navTitle, sample: "原始梦境"),
         .init(role: .cardTitle, sample: "潮声中的告别"),
         .init(role: .body, sample: "列车代表你正在离开旧叙事，海浪象征情绪仍在波动。"),
         .init(role: .bodyStrong, sample: "深度解析"),
         .init(role: .caption, sample: "2025年12月14日 · AI洞察值"),
         .init(role: .detailTime, sample: "11:21 上午"),
-        .init(role: .metric, sample: "82"),
-        .init(role: .metricUnit, sample: "分")
+        .init(role: .metric, sample: "82")
     ]
 
     private let insetSpecs: [FoundationInsetSpec] = [

@@ -114,7 +114,7 @@ private struct ColorTokenSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DreamSpacing.m) {
-            SectionTitle("颜色系统")
+            DreamSectionTitle("颜色系统")
 
             LazyVGrid(columns: columns, spacing: DreamSpacing.s) {
                 ForEach(specs) { spec in
@@ -128,7 +128,7 @@ private struct ColorTokenSection: View {
 private struct TypographySystemEntrySection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DreamSpacing.m) {
-            SectionTitle("排版系统")
+            DreamSectionTitle("排版系统")
 
             ModuleEntryCard(
                 symbol: "textformat.abc.dottedunderline",
@@ -145,7 +145,7 @@ private struct TypographySystemEntrySection: View {
 private struct SurfacePrimitiveSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DreamSpacing.m) {
-            SectionTitle("处理态组件")
+            DreamSectionTitle("处理态组件")
 
             VStack(alignment: .leading, spacing: DreamSpacing.s) {
                 DemoLabel(text: "统一处理态（文案按场景切换：解梦中 / 生成中）")
@@ -166,7 +166,7 @@ private struct SurfacePrimitiveSection: View {
 private struct NavigationSystemSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DreamSpacing.m) {
-            SectionTitle("导航系统")
+            DreamSectionTitle("导航系统")
 
             BottomDockShowcase()
         }
@@ -176,7 +176,7 @@ private struct NavigationSystemSection: View {
 private struct PageTemplateSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DreamSpacing.m) {
-            SectionTitle("页面模板")
+            DreamSectionTitle("页面模板")
 
             ModuleEntryCard(
                 symbol: "rectangle.stack.person.crop",
@@ -400,20 +400,6 @@ private struct ColorTokenCell: View {
         .padding(DreamSpacing.xs)
         .background(DreamSurfaceCard(radius: DreamCornerRadius.md, fill: DreamColor.cardStrong))
         .dreamCardShadow()
-    }
-}
-
-private struct SectionTitle: View {
-    let text: String
-
-    init(_ text: String) {
-        self.text = text
-    }
-
-    var body: some View {
-        Text(text)
-            .dreamRole(.bodyStrong)
-            .foregroundColor(DreamColor.textPrimary)
     }
 }
 
