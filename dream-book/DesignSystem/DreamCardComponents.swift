@@ -28,6 +28,7 @@ struct DreamTimelineCardListView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text("近期梦境")
                     .dreamRole(.navTitle)
+                    .font(.system(size: 18, weight: .semibold, design: .serif))
                     .foregroundColor(DreamColor.textPrimary)
                     .padding(.bottom, DreamCardLayout.timelineSectionHeaderBottomPadding)
 
@@ -300,12 +301,13 @@ private struct DreamSummaryPanel: View {
             // ---- 标题区：按用户输入原文展示，不做拼接干预 ----
             Text(item.dreamTitle)
                 .dreamRole(.navTitle)
+                .font(.system(size: 20, weight: .semibold, design: .serif))
                 .foregroundColor(DreamColor.textPrimary)
                 .lineLimit(DreamCardLayout.summaryTitleLineLimit)
 
             // ---- 正文区：按用户输入原文展示，不注入 emoji 或回退文案 ----
             Text(item.dreamSummary)
-                .font(.system(size: 15, weight: .regular, design: .serif))
+                .font(.system(size: 14, weight: .regular, design: .serif))
                 .tracking(0.05)
                 .foregroundColor(DreamColor.textSecondary.opacity(0.88))
                 .lineLimit(DreamCardLayout.summaryBodyLineLimit)

@@ -175,12 +175,12 @@ enum DreamCardLayout {
     static let timelineRowSpacing: CGFloat = DreamLayoutRhythm.pageSectionGap
     static let timelineRowContentSpacing: CGFloat = DreamSpacing.s
     static let timelineSectionHeaderBottomPadding: CGFloat = DreamLayoutRhythm.groupGap
-    static let timelineColumnWidth: CGFloat = 64
+    static let timelineColumnWidth: CGFloat = 54
     static let timelineTopPadding: CGFloat = 10
     static let timelineDebugRowBottomMargin: CGFloat = 40
-    static let timelineDatePairSpacing: CGFloat = 4
-    static let timelineDayFontSize: CGFloat = 29
-    static let timelineMonthFontSize: CGFloat = 12
+    static let timelineDatePairSpacing: CGFloat = 2
+    static let timelineDayFontSize: CGFloat = 27
+    static let timelineMonthFontSize: CGFloat = 11
     static let timelineMonthBaselineOffset: CGFloat = 0
 
     static let insightCardWidth: CGFloat = 166
@@ -217,8 +217,11 @@ enum DreamCardLayout {
     static var timelineHeroInsightCenterOffsetX: CGFloat {
         timelineHeroInsightLeading + (insightCardWidth * 0.5) - (timelineHeroClusterWidth * 0.5)
     }
+    static let timelineHeroVisualLeftShift: CGFloat = -6
     static var timelineHeroStageToScreenCenterCorrectionX: CGFloat {
-        (listContentInsets.trailing - listContentInsets.leading - timelineColumnWidth - timelineRowContentSpacing) * 0.5
+        // ---- 缩窄日期列后给 Hero 簇轻微左移，修正整体视觉重心 ----
+        ((listContentInsets.trailing - listContentInsets.leading - timelineColumnWidth - timelineRowContentSpacing) * 0.5)
+            + timelineHeroVisualLeftShift
     }
     static let timelineLayerSwitchSwipeThreshold: CGFloat = 26
     static let timelineLayerBackScale: CGFloat = 0.954
@@ -231,15 +234,15 @@ enum DreamCardLayout {
 
     static let timelineSummaryBottomBreathing: CGFloat = DreamLayoutRhythm.groupGap
     static let summaryCardTopPadding: CGFloat = 72
-    static let summaryPanelOverlayClearance: CGFloat = 68
-    static let summaryPanelMinHeight: CGFloat = 224
+    static let summaryPanelOverlayClearance: CGFloat = 54
+    static let summaryPanelMinHeight: CGFloat = 204
     static let summaryBodyLineLimit: Int = 4
     static let summaryTitleLineLimit: Int = 2
     static let summaryBodyLineSpacing: CGFloat = 6
-    static let summaryPanelInsets: EdgeInsets = EdgeInsets(top: 24, leading: 24, bottom: 22, trailing: 24)
+    static let summaryPanelInsets: EdgeInsets = EdgeInsets(top: 24, leading: 24, bottom: 16, trailing: 24)
     static let summaryPanelGroupSpacing: CGFloat = 14
     static let summaryPanelRowSpacing: CGFloat = DreamLayoutRhythm.rowGap
-    static let summaryTimeTopPadding: CGFloat = 10
+    static let summaryTimeTopPadding: CGFloat = 5
 
     static var summaryPanelRenderedMinHeight: CGFloat {
         summaryPanelMinHeight + summaryPanelInsets.top + summaryPanelInsets.bottom
