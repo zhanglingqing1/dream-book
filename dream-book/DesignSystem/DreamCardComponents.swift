@@ -551,12 +551,12 @@ struct DreamInsightOverlayCard: View {
         .overlay(
             RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
                 .inset(by: innerStrokeInset)
-                .stroke(ticketBorder.opacity(0.58), lineWidth: innerStrokeWidth)
+                .stroke(ticketBorder, lineWidth: innerStrokeWidth)
         )
         .overlay(
             RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
                 .inset(by: innerStrokeInset + 0.78)
-                .stroke(DreamColor.paperCardInnerStroke.opacity(0.48), lineWidth: 0.4)
+                .stroke(DreamColor.premiumText.opacity(0.24), lineWidth: 0.4)
         )
     }
 
@@ -573,19 +573,19 @@ struct DreamInsightOverlayCard: View {
     }
 
     private var ticketInk: Color {
-        DreamColor.textPrimary.opacity(0.90)
+        DreamColor.premiumText.opacity(0.90)
     }
 
     private var ticketBorder: Color {
-        DreamColor.textPrimary.opacity(0.58)
+        DreamColor.premiumText.opacity(0.58)
     }
 
     private var ticketRuleStrong: Color {
-        DreamColor.textPrimary.opacity(0.56)
+        DreamColor.premiumText.opacity(0.56)
     }
 
     private var ticketRuleSoft: Color {
-        DreamColor.textPrimary.opacity(0.16)
+        DreamColor.premiumText.opacity(0.16)
     }
 }
 
@@ -639,11 +639,11 @@ private struct DreamMetricValueView: View {
     }
 
     private var valueColor: Color {
-        DreamColor.textPrimary.opacity(role == .metric ? 0.92 : 0.88)
+        DreamColor.premiumText.opacity(role == .metric ? 0.92 : 0.88)
     }
 
     private var unitColor: Color {
-        DreamColor.textPrimary.opacity(role == .metric ? 0.66 : 0.60)
+        DreamColor.premiumText.opacity(role == .metric ? 0.66 : 0.60)
     }
 }
 
